@@ -1,0 +1,26 @@
+doctype html
+html(ng-app = "manhours")
+  head
+    title= title
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    link(rel='stylesheet', href='/css/bootstrap.css', id="bootstrap-css")
+    link(rel='stylesheet', href='/css/bootstrap-themed.css', id="bootstrap-css")
+    link(rel='stylesheet', href='/css/manhours.css')
+    link(rel='stylesheet', href='/css/ng-tags-input.min.css')
+    link(rel='stylesheet', href='/css/ngToast.min.css')
+    block resources
+  body#content
+    ng-toast
+    block content
+   
+    script(type='text/javascript', src='/js/jquery.min.js')
+    script(type='text/javascript', src='/js/angular.js')
+    script(type='text/javascript', src='/js/angular-resource.min.js')
+    script(type='text/javascript', src='/js/angular-animate.js')
+    script(type='text/javascript', src='/js/angular-sanitize.js')
+    script(type='text/javascript', src='/js/manhours.js')
+    //script(type='text/javascript', src='/js/bootstrap.min.js')
+    script(type='text/javascript', src='/js/ui-bootstrap-tpls-0.11.2.js')
+    script(type='text/javascript', src='/js/ng-tags-input.min.js')
+    script(type='text/javascript', src='/js/ng-contextmenu.js')
+    script(type='text/javascript', src='/js/ngToast.min.js')

@@ -1,0 +1,93 @@
+extends navigationpage
+block navigationpage_content
+    h2.white  Reports 
+    ol.breadcrumb
+      li
+        a.white(href='/') Home
+      li.active.white-active Reports
+
+    br
+    .row(ng-controller="ReportCtrl")
+        .col-lg-2
+          .row
+              .panel.panel
+                    .panel-heading.clearfix
+                        h3.admin-panel-heading.panel-title.pull-left Filter
+                    .panel-body
+                      .row
+                        .form-group.col-md-12
+                              label.control-label() Project
+                              .form-inline
+                                select.full-width.form-control(data-ng-model = "project", ng-change="updateReport()", data-ng-options="project.name for project in projects", required = "required")
+                       .row
+                           .form-group.col-md-12
+                              label.control-label() From
+                              p.input-group.datepicker
+                                input.form-control(type='text', name='startDate', ng-change="updateReport()",placeholder='Start Date', datepicker-popup='yyyy/MM/dd', ng-model='startDate', is-open='opened1', datepicker-options='dateOptions', date-disabled='disabled(date, mode)', ng-required='true', close-text='Close', ng-click='open1($event)')
+                                span.input-group-btn
+                                    button.btn.btn-default(type='button', ng-click='open1($event)')
+                                       i.glyphicon.glyphicon-calendar
+                        .row
+                           .form-group.col-md-12
+                              label.control-label() To
+                              p.input-group.datepicker
+                                input.form-control(type='text', name='endDate', ng-change="updateReport()", placeholder='End Date', datepicker-popup='yyyy/MM/dd', ng-model='endDate', is-open='opened2', datepicker-options='dateOptions', date-disabled='disabled(date, mode)', ng-required='true', close-text='Close', ng-click='open2($event)')
+                                span.input-group-btn
+                                    button.btn.btn-default(type='button', ng-click='open2($event)')
+                                       i.glyphicon.glyphicon-calendar
+          .row
+            .download-link.pull-right(ng-show = "result.dailyReport.length > 0")
+                  a(ng-click="printReport()")
+                    i.glyphicon.glyphicon-print.space-right
+                    | Print View
+        .col-lg-10.report
+            h3.white {{project.name}}   
+            .row
+                .col-lg-3
+                    h3(ng-show = "result.dailyReport.length == 0").white-active 
+                        i.glyphicon.glyphicon-warning-sign.space-right
+                        | No data available
+                    h2(ng-show = "result.dailyReport.length > 0").white Daily Utilization
+                    ul(ng-show = "result.dailyReport.length > 0").white
+                        li(ng-repeat="dateReport in result.dailyReport track by $index")
+                            h3
+                                {{dateReport.date | date:"MMM d, y"}}
+                            .row
+                                table.white
+                                    tr(ng-repeat="manhour in dateReport.manhours track by $index")
+                                         td
+                                            h5 {{  $index + 1}}. {{manhour.user}}
+                                            ol
+                                              li(ng-repeat="task in manhour.tasks", ng-show = "task.project == project._id && task.duration > 0")
+                                                  {{task.task}} : {{task.duration}} {{ task.duration > 1 ? 'hrs' : 'hr'}}
+                .col-lg-3(ng-show = "result.dailyReport.length > 0")
+                    h2(ng-show = "result.dailyReport.length > 0").white Manhour
+                        ul.white
+                            li(ng-repeat="(member, tasks) in result.memberSummary")
+                                h3
+                                    {{ member }}
+                                ul.white
+                                    li(ng-repeat="(taskname, duration) in tasks", ng-show = "duration > 0")
+                                        h5 {{taskname }} : {{duration}}
+                .col-lg-3(ng-show = "result.dailyReport.length > 0")
+                    h2().white Tasks
+                        ul.white
+                            li(ng-repeat="(key, value) in result.taskSummary")
+                                h4
+                                    {{ key }} : {{ value }}
+                    h2().white In/Out
+                        ul.white
+                            li(ng-repeat="(key, value) in result.inOutSummary")
+                                h4
+                                    {{ key }} : {{ value }}
+
+                     h2(ng-show = "result.leaveSummary").white Leaves
+                        ul.white
+                            li(ng-repeat="(member, leaves) in result.leaveSummary", ng-show = "leaves.length > 0")
+                                h3
+                                    {{ member }}
+                                ol
+                                    li(ng-repeat="leave in leaves")
+                                        h4 {{ leave.date | date:"MM/dd/y"}} - {{ leave.type}}
+           
+                

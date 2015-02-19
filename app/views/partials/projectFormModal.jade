@@ -1,0 +1,20 @@
+.modal-header
+  button.close(type='button', ng-click='cancel()', aria-label='Close')
+    span(aria-hidden='true') ×
+  h4.modal-title {{mode}} Project
+.modal-body()
+    form(method = "post")
+        .form-group
+          label.control-label(for='project-name') Project Name
+          input#project-name.form-control(ng-model="project.name", placeholder="Project Name")
+
+        .form-group
+          label.control-label(for='project-members') Members
+          tags-input(ng-model="project.members", display-property="username", min-length=3, placeholder="Project Members", add-from-autocomplete-only = "true")
+              auto-complete(source = "loadUsers($query)", min-length = 1, load-on-down-arrow = "true", debounce-delay=10, max-results-to-show=5)
+        .form-group
+          label.control-label(for='project-tasks') Tasks
+          tags-input(ng-model="project.tasks", display-property="task", name="tasks", min-length=3, placeholder="Project Task")
+.modal-footer
+    button.btn.btn-default(type='button', ng-click='cancel()') Close
+    button.btn.btn-primary(type='submit', ng-click='saveProject()') {{mode}}

@@ -1,0 +1,114 @@
+extends navigationpage
+block navigationpage_content
+    h2.white  Calendar 
+    ol.breadcrumb
+      li
+        a.white(href='/') Home
+      li.active.white-active Calendar
+
+    .row
+        .col-lg-8(ng-controller="CalendarCtrl")
+
+            .row
+              .pull-left
+                h1.white.month-name // {{cal_month_title}}
+              .pull-right
+                button.calendar-button.back(ng-click = "prevMonth()")  
+                button.calendar-button.next(ng-click = "nextMonth()")           
+            .panel
+                .panel-body
+                  
+                    table.month(cellspacing='0', cellpadding='0', width = '100%')
+                        colgroup(span='7')
+
+                          tbody()
+                            tr.month-days
+                              th(ng-repeat="cal_day_name in cal_day_names", scope='col') {{cal_day_name | limitTo : 3}}
+                            tr.month-week(ng-repeat="week in cal_month_day_weeks")
+                              td(ng-repeat="cell in week", ng-click="selectDate(cell.date)", ng-model = "cell", data-context-menu="partials/calendarContextMenu", data-context-event="contextmenu")
+                                  div(class="{{cell.celltype}}" )
+                                      .month-day-num.pull-left {{cell.date.getDate()}}
+                                      span.glyphicon.glyphicon-ok.pull-right(ng-show = "cell.manhour") 
+                                      span.month-day-holiday {{cell.holiday.name}}
+                                      .month-day-details
+                                        //{{cell.date}}
+                                        .month-day-leave {{cell.leave.type}}
+                                        .month-day-leaves(ng-show = "cell.leave_all.length > 0") 
+                                            a.pull-right(ng-click = "showLeaves(cell.date, cell.leave_all)", title = "{{cell.leave_all.length}} resource{{cell.leave_all.length == 1 ? ' is' : 's are'}} on leave") 
+                                                span.glyphicon.glyphicon-user
+                                                {{cell.leave_all.length}}
+                                        
+                              
+        .col-lg-3(ng-controller="ManHourCtrl", ng-show = "!showForm")
+                
+            .row
+                .panel.panel
+                    .panel-heading.clearfix
+                        h3.admin-panel-heading.panel-title.pull-left In/Out Info
+                        .pull-right {{manhour.date | date:"MMMM d, y"}}
+                    .panel-body
+                      .row
+                        .form-group.col-sm-6
+                              label.control-label() Time In
+                              .form-inline
+                                select.form-control.mh_inout(data-ng-model = "manhour.timein_hour", ng-change="updateInOut()", data-ng-options="hour | leftpad for hour in inout_time_hours")
+                                select.form-control.mh_inout(data-ng-model = "manhour.timein_min", ng-change="updateInOut()", data-ng-options="minute | leftpad for minute in inout_time_minutes")
+                        .form-group.col-sm-6
+                              label.control-label() Time Out
+                              .form-inline
+                                select.form-control.mh_inout(data-ng-model = "manhour.timeout_hour", ng-change="updateInOut()", data-ng-options="hour | leftpad for hour in inout_time_hours")
+                                select.form-control.mh_inout(data-ng-model = "manhour.timeout_min", ng-change="updateInOut()", data-ng-options="minute | leftpad for minute in inout_time_minutes")
+                                  
+                      .row()
+                        .form-group.col-sm-6
+                            label.control-label() Filed Overtime
+                              select.full-width.form-control(ng-change = "overtimeToggled()", data-ng-model = "manhour.isOvertime", ng-disabled = "!showOvertimeOption", required='required')
+                                option(value = 0) No
+                                option(value = 1) Yes
+                        .form-group.col-sm-6(ng-show = "showOvertimeOption && otprojects.length > 0")
+                            label.control-label() OT/Y Project
+                              select.full-width.form-control(data-ng-model = "manhour.otProject", required='required', ng-disabled = "otprojects.length == 1", data-ng-options="project._id as project.name for project in otprojects")
+                .panel.panel
+                    .panel-heading.clearfix
+                        h3.admin-panel-heading.panel-title.pull-left Utilization
+                        .pull-right.red(ng-hide = "undistributedHours == 0") Undistributed: {{undistributedHours}}
+                    .panel-body
+                      form(method = "post")
+                        .row
+                          .table-responsive.col-lg-12
+                            table.table.noborder
+                               
+                                tbody
+                                  tr
+                                    td.mh_task Non-Working
+                                    td
+                                      input.form-control.mh_duration(ng-model = "manhour.nonworking", type = "number", placeholder="0", ng-change = "updateTotalUtilization()", step = ".01", min = "0")
+                                  tr(ng-repeat="mh_field in manhour.mh_fields track by $index")
+                                    td.mh_task {{mh_field.project}} - {{mh_field.field_name}}
+                                    td
+                                      input.form-control.mh_duration(ng-model = "manhour.tasks[$index].duration", ng-change = "updateTotalUtilization()", type = "number", step = ".01", placeholder="0", min = "0")
+
+                          .pull-right
+                            button.btn.btn-primary.space-right(ng-click='deleteManhour()', ng-show= 'manhour._id') Delete
+                            button.btn.btn-primary(ng-click='saveManhour()') Save
+
+            .row
+                .panel.panel
+                    .panel-heading
+                        h3.admin-panel-heading.panel-title Summary
+                    .panel-body
+                        .row
+                          .table-responsive.col-lg-12
+                            table.table.noborder
+                                tbody
+                                  tr
+                                    td Hours in office
+                                    td {{officeDuration}} hr
+                                  tr
+                                    td Project Utilization
+                                    td {{totalUtilizedHours - manhour.nonworking | number: 2}} hr
+                                  tr(ng-show = "overtimeHours > 0")
+                                    td {{ manhour.isOvertime == 1 ? 'Overtime' : 'OTY'}}
+                                    td {{overtimeHours | number: 2}} hr
+            
+

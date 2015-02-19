@@ -1,0 +1,249 @@
+/*
+*
+* Utilization Tracker specifics
+*
+*/
+body{
+	background:#2c4762;  
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-attachment: absolute;
+}
+.full-width{
+ width: 100% !important;
+}
+.clickable{
+	cursor: pointer;
+	display: inline-block;
+}
+.download-link a{
+	color: #fff !important;
+	cursor: pointer;
+}
+.white{
+	color: white !important;
+}
+.red{
+	color: #ff2200;
+}
+.white-active{
+	color: rgba(255,255,255,.7) !important;
+}
+.space-right{
+	margin-right: 8px;
+}
+
+.report ul li{
+	list-style-type: none !important;
+}
+.datepicker table .btn {
+ border: 0px;
+}
+button.calendar-button{
+	display: inline-block;
+	width: 40px;
+	height: 40px;
+	border: 0px;
+	background-size: cover !important;
+	opacity: .5;
+	-webkit-transition-duration: 0.5s;
+    -moz-transition-duration: 0.5s;
+    -o-transition-duration: 0.5s;
+    transition-duration: 0.5s;
+    -webkit-transition-property: -webkit-transform;
+    -moz-transition-property: -moz-transform;
+    -o-transition-property: -o-transform;
+    transition-property: transform;
+    overflow:hidden;
+}
+
+button.calendar-button:hover{
+	-webkit-transform:rotate(-360deg);
+    -moz-transform:rotate(-360deg);
+    -o-transform:rotate(-360deg);
+    opacity:.9;
+}
+
+button.calendar-button:active{
+	opacity: .3;
+}
+
+button.back{
+	background: url('/images/back.png');
+}
+
+button.next{
+	background: url('/images/next.png');
+	margin-left: 8px;
+}
+
+.admin-panel-heading{
+	padding-top: 5px;
+}
+.holiday-date{
+	margin-right: 10px;
+}
+.heading-btn{
+	font-size: 13px;
+	padding: 1.1px 8px 1.1px 8px !important;
+}
+.month-name{
+	margin-top: 0px;
+	opacity: .6;
+}
+.month{
+	table-layout: fixed;
+
+   
+
+}
+.month th, .month td{
+border: 1px solid #e1e1e1}
+.month-days th{
+	text-align: center;
+	border-bottom: 0px solid #e1e1e1;
+}
+.month-day{
+	border-right: 0px solid #e1e1e1;
+	min-height: 160px;
+	padding:7px;
+	transition: background .25s ease-in-out;
+   -moz-transition: background .25s ease-in-out;
+   -webkit-transition: background .25s ease-in-out;
+height: 100%;
+
+}
+
+.month-day-selected{
+	background: #d8f5ff;
+	border-right: 0px solid #e0e0e0;
+	min-height: 160px;
+	padding:7px;
+height: 100%;
+}
+
+.month-day-other{
+	border-right: 0px solid #e1e1e1;
+	min-height: 160px;
+	padding:7px;
+height: 100%;
+}
+
+.month-day-other .month-day-num{
+	opacity: .4;
+}
+
+.month-day-selected .month-day-num{
+	font-weight: bold;
+	opacity: .95;
+}
+
+
+.month-day:hover{
+	background: #effcff;
+
+}
+
+.month-week{
+	border-bottom: 0px solid #e1e1e1;
+	border-left: 0px solid #e1e1e1;
+}
+.month-day-num{
+	font-size: 1.2em;
+	opacity: .95;
+	cursor: default;
+}
+.month-day-leave{
+	text-align: center;
+	font-size: 1.2em;
+	margin: auto auto;
+	letter-spacing: -.05em;
+	cursor: default;
+	display:inline-block;
+	min-height:15px;
+	width: 100%;
+	font-size: 13px;
+}
+.month-day-leaves{
+	
+	margin-top: 40px;
+	right: 10px;
+	cursor: pointer;
+
+}
+.month-day-leaves a:hover{
+	text-decoration: none;
+}
+.mh_task {
+	vertical-align: middle !important;
+}
+.mh_duration{
+	width: 70px;
+	padding-left: 8px;
+	padding-right: 8px;
+	float: right;
+}
+
+.mh_inout{
+	width: 53px;
+	padding-left: 3px;
+	padding-right: 3px;
+
+}
+
+.month-day-holiday{
+margin-top: 3px;
+/* opacity: .85; */
+margin-left: 8px;
+/* position: relative; */
+/* float: left; */
+/* display: inline-block; */
+color: #D9534F;
+}
+
+.tag-item{
+	background: #95a5a6 !important;
+	color: #ffffff !important;
+	font-size:11px;
+	opacity:.9;
+	border: 0px !important;
+}
+
+.remove-button{
+	color: #ffffff !important;
+}
+
+
+.month-day-details{
+	list-style-type: none;
+	margin-top: 2.3em;
+	padding-left: .1em;
+	height: 0%;
+	width: 100%;
+	display:inline-block;
+	opacity: .95;
+	font-size: 13px;
+}
+
+.month-day-details .glyphicon{
+	margin-right: 5px;
+}
+
+
+/* Menu */
+
+ul.calendar-context-menu {
+	display:block !important;
+    position: absolute;
+    list-style-type: none;
+    background-color: rgb(34, 31, 31);
+    box-shadow: 0 0 5px rgba(0, 0, 0, .15);
+    width: 150px;
+    border: 1px solid rgba(0, 0, 0, .15);
+    top: 0;
+    left: 0;
+}
+
+.calendar-context-menu li a {
+	cursor: default;
+}

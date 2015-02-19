@@ -1,0 +1,20 @@
+.modal-header
+  button.close(type='button', ng-click='cancel()', aria-label='Close')
+    span(aria-hidden='true') ×
+  h4.modal-title {{mode}} Holiday
+.modal-body()
+    form(method = "post")
+        .form-group
+          label.control-label(for='holiday-name') Holiday
+          input#holiday-name.form-control(ng-model="holiday.name", placeholder="Holiday Name", required = 'required')
+        .form-group
+          label.control-label(for='holiday-date') Date
+          p.input-group.datepicker
+            input.form-control(type='text', name='date', placeholder='Date', datepicker-popup='yyyy/MM/dd', ng-model='holiday.date', is-open='opened1', datepicker-options='dateOptions', date-disabled='disabled(date, mode)', ng-required='true', close-text='Close')
+            span.input-group-btn
+              button.btn.btn-default(type='button', ng-click='open1($event)')
+                i.glyphicon.glyphicon-calendar
+
+.modal-footer
+    button.btn.btn-default(type='button', ng-click='cancel()') Close
+    button.btn.btn-primary(type='submit', ng-click='saveHoliday(holiday)', ng-show = "holiday.name.length > 0") {{mode}}

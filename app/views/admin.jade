@@ -1,0 +1,51 @@
+extends navigationpage
+block navigationpage_content
+    h2.white  Admin 
+    ol.breadcrumb
+      li
+        a(href='/').white Home
+      li.active.white-active Admin
+
+    br
+    .row
+        .col-lg-4(ng-controller="ProjectsCtrl")
+            .panel.panel-default
+                .panel-heading.clearfix
+                    h3.panel-title.admin-panel-heading.pull-left Projects
+                    button.btn.btn-default.btn-sm.pull-right(type='button', ng-click = 'showProjectForm()')
+                      span.glyphicon.glyphicon-plus(aria-hidden='true')
+                      |  Create
+                ul.list-group
+                    li.list-group-item(ng-repeat="project in projects") 
+                        a(href = "#", ng-click = "showProjectForm(project)")
+                            {{project.name}}
+                    li.list-group-item(ng-show = "projects.length == 0") No projects found        
+                  
+        .col-lg-4(ng-controller="UsersCtrl")
+            .panel.panel-default
+                .panel-heading
+                    h3.admin-panel-heading.panel-title Users
+                ul.list-group
+                    li.list-group-item(ng-repeat="user in users") 
+                        a(href = "#", ng-click = "showUserForm(user)")
+                            {{user.username}}
+
+        .col-lg-4(ng-controller="HolidaysCtrl")
+            .panel.panel-default
+                .panel-heading.clearfix
+                    h3.admin-panel-heading.panel-title.pull-left Holidays
+                    button.btn.btn-default.btn-sm.pull-right(type='button', ng-click = 'showHolidayForm()')
+                      span.glyphicon.glyphicon-plus(aria-hidden='true')
+                      |  Create
+                ul.list-group
+                    li.list-group-item(ng-repeat="holiday in holidays") 
+                        div.clearfix
+                            span.pull-left
+                                span.holiday-date.label.label-default
+                                    {{holiday.date | date:"MM/d/y"}}
+                                a(href = "#", ng-click = "showHolidayForm(holiday)")
+                                    {{holiday.name}}
+                            span.pull-right
+                                a(href = "#", ng-click = "deleteHoliday(holiday._id)")
+                                   span.glyphicon.glyphicon-remove(aria-hidden='true')
+                    li.list-group-item(ng-show = "holidays.length == 0") No holidays found

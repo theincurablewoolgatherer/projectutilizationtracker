@@ -1,0 +1,54 @@
+extends base
+block resources
+    link(rel='stylesheet', href='/css/navigation.css')
+block content
+    div.row
+        .side-menu
+            nav.navbar.navbar-default(role='navigation')
+              .navbar-header
+                .brand-wrapper
+                  // I Love Bacon
+                  button.navbar-toggle(type='button')
+                    //span.sr-only Toggle navigation      
+                    //span.icon-bar     
+                    //span.icon-bar      
+                   // span.icon-bar
+                  // Bacon is your salvation
+                  .navbar-header
+                      a.navbar-brand()
+                          .brand-title
+
+                            span.brand-text 
+                                span.glyphicon.glyphicon-time
+                                | Utilization Tracker
+                 
+              // Main Menu
+              .side-menu-container
+                ul.nav.navbar-nav
+                  li.list-header.space-right
+                    .pull-right.white-active.space-right Navigation
+                  li
+                    a(href='/manhour').pull-right
+                      span.glyphicon.glyphicon-calendar
+                      |  Calendar  
+                  if(isManager)
+                    li
+                      a(href='/admin').pull-right
+                        span.glyphicon.glyphicon-wrench
+                        |  Admin
+                  
+                  li
+                    a(href='/reports').pull-right
+                      span.glyphicon.glyphicon-signal
+                      |  Reports
+                  li
+                    a(href='/logout').pull-right
+                      span.glyphicon.glyphicon-off
+                      |  Logout
+
+        // Main Content
+        .container-fluid
+          .side-body
+              block navigationpage_content
+
+

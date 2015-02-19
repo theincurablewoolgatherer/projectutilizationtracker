@@ -1,0 +1,46 @@
+extends base
+block resources
+    link(rel='stylesheet', href='/css/report.css')
+block content
+    legend.clearfix
+        h1.pull-left #{report.projectname}
+        h4.pull-right(style = 'margin-top: 30px')
+            |     #{(report.start.getMonth()+1) + '/' +report.start.getDate() + '/' + report.start.getFullYear()} -  #{(report.end.getMonth()+1) + '/' +report.end.getDate() + '/' + report.end.getFullYear()}
+    br
+    table.report
+       tr
+        td(style = 'width: 380px; vertical-align: top;')
+            h3 01. Daily Utilization  
+            ol 
+               each day in report.dailyReport
+                 li
+                    b= day.date.toLocaleDateString()
+                    ol
+                        each manhour in day.manhours
+                           li
+                               b= manhour.user
+                               ol
+                                   each task in manhour.tasks
+                                      if(task.duration && task.duration > 0)
+                                          li= task.task + ': ' + task.duration
+        td(style = 'vertical-align:top')
+            h3 02. Tasks  
+            ol
+              each val,key in report.taskSummary
+                li= key + ': ' + val
+            hr
+            h3 03. Resources
+            ol
+              each val,key in report.memberSummary
+                li
+                  b= key
+                  ol
+                    each taskduration,taskname in val
+                       li= taskname + ': ' + taskduration
+            hr
+            h3 04. In/Out 
+            ol
+              each val,key in report.inOutSummary
+                li= key + ': ' + val
+   
+
