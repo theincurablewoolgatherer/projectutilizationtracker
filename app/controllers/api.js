@@ -338,6 +338,7 @@ userLeaves = function(req, res) {
 userAllLeaves = function(req, res) {
   var start = new Date(parseInt(req.params.start));
   var end = new Date(parseInt(req.params.end));
+
   Leave.find({date:{ $gte:start, $lte:end}}).populate("user").exec(
     function (err, leaves) {
       if (err) {

@@ -485,7 +485,8 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
       for(var w = 0; w < $scope.cal_month_day_weeks.length; w++){
         for(var d = 0; d < $scope.cal_month_day_weeks[w].length; d++){
           for(var m = 0; m < $scope.month_manhours.length; m++){
-            if($scope.cal_current_date.getTime() == new Date($scope.month_manhours[m].date).getTime()){
+            if(dateHelper.isSameDay($scope.cal_current_date, dateHelper.getLocalFromUTCTime(dateHelper.getDateFromString($scope.month_manhours[m].date)))){
+                
                // Set Current Manhour
                $scope.manhour =  $scope.month_manhours[m];
              }
@@ -529,7 +530,7 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
      
     var drawCalendarDetails = function(date){
        // 1. Draw Holidays in Calendar Cells
-       var firstOfMonth = dateHelper.getFirstDateOfMonth(date);
+       var firstOfMonth = dateHelper.getUTCTime(dateHelper.getFirstDateOfMonth(date));
        var lastOfMonth = dateHelper.getLastDateOfMonth(date);
        var holiday_url_all = ROUTE.HOLIDAY_LIST + "/from/" + firstOfMonth.getTime()+"/to/"+lastOfMonth.getTime()+"?"+new Date();
        $http.get(holiday_url_all).then(
@@ -537,14 +538,16 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
           for(var w = 0; w < $scope.cal_month_day_weeks.length; w++){
             for(var d = 0; d < $scope.cal_month_day_weeks[w].length; d++){
               for(var l = 0; l < holidays.data.length; l++){
-                if($scope.cal_month_day_weeks[w][d].date.getTime() == new Date(holidays.data[l].date).getTime()){
+                var holidayDay = dateHelper.getLocalFromUTCTime(dateHelper.getDateFromString(holidays.data[l].date));
+                var cellDay = $scope.cal_month_day_weeks[w][d].date;  
+                if(dateHelper.isSameDay(holidayDay, cellDay)){
                    $scope.cal_month_day_weeks[w][d].holiday = holidays.data[l];
                 }
               }
             }
           }
         });
-        
+         
         // 2. Draw Leave Count/Show Leaves link for each Calendar Cell
         var leave_url_all = ROUTE.USER_LEAVES_ALL + "from/" + firstOfMonth.getTime()+"/to/"+lastOfMonth.getTime()+"?"+new Date().getTime();
         $http.get(leave_url_all).then(
@@ -553,12 +556,9 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
                 for(var d = 0; d < $scope.cal_month_day_weeks[w].length; d++){
                   var day_leaves = [];
                   for(var l = 0; l < leaves.data.length; l++){
-                    var leaveDay = dateHelper.getDateFromString(leaves.data[l].date);
-                       console.log(leaveDay);
-       
-                      
-                      console.log(leaveDay);
+                    var leaveDay =  dateHelper.getLocalFromUTCTime(dateHelper.getDateFromString(leaves.data[l].date));
                     var cellDay = $scope.cal_month_day_weeks[w][d].date;
+                     
                     if(dateHelper.isSameDay(leaveDay, cellDay)){
                       day_leaves.push(leaves.data[l]);
                       // console.log($scope.cal_month_day_weeks[w][d].date + " LEAVE: " + leaveDay + " = " + leaves.data[l].user.username);
@@ -580,7 +580,7 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
                   for(var l = 0; l < leaves.data.length; l++){
                     for(var w = 0; w < $scope.cal_month_day_weeks.length; w++){
                       for(var d = 0; d < $scope.cal_month_day_weeks[w].length; d++){
-                        var leaveDay = dateHelper.getDateFromString(leaves.data[l].date);
+                        var leaveDay =  dateHelper.getLocalFromUTCTime(dateHelper.getDateFromString(leaves.data[l].date));
                         var cellDay = $scope.cal_month_day_weeks[w][d].date;
                         if(dateHelper.isSameDay(leaveDay, cellDay)){
                            $scope.cal_month_day_weeks[w][d].leave = leaves.data[l];
@@ -590,7 +590,7 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
                   }
                 });
 
-               // 3.2 Draw Manhour Saved Indicator
+               // 3.2 Retrieve manhours for the month and draw indicator on cells if user already inputted
                var manhour_url = ROUTE.MANHOUR_USER + result.data.username + "/from/" + firstOfMonth.getTime()+"/to/"+lastOfMonth.getTime()+"?"+new Date();
                $http.get(manhour_url).then(
                   function(manhours){
@@ -598,7 +598,11 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
                     for(var w = 0; w < $scope.cal_month_day_weeks.length; w++){
                       for(var d = 0; d < $scope.cal_month_day_weeks[w].length; d++){
                         for(var m = 0; m < manhours.data.length; m++){
-                          if($scope.cal_month_day_weeks[w][d].date.getTime() == new Date(manhours.data[m].date).getTime()){
+                          var mhDay = dateHelper.getLocalFromUTCTime(dateHelper.getDateFromString(manhours.data[m].date));
+                         
+                          var cellDay = $scope.cal_month_day_weeks[w][d].date;
+                           
+                          if(dateHelper.isSameDay(mhDay, cellDay)){
                              $scope.cal_month_day_weeks[w][d].manhour = manhours.data[m];
                            }
                         }
@@ -609,14 +613,8 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
     }
     
     $scope.applyLeave = function(date, type, mode){
-      var leaveDate = new Date(date);
-      var utc = leaveDate.getTime() + (leaveDate.getTimezoneOffset() * 60000);
-      leaveDate = new Date(utc);
-        
-        console.log(leaveDate);
-      console.log("DATEEEE"+date);
-     //  return;
-      var leave = {date: date, type: type};
+      var leaveDate = dateHelper.getUTCTime(date);
+      var leave = {date: leaveDate, type: type};
       var leave_url = ROUTE.LEAVE_SAVE;
       if(mode === 0){
         leave_url = ROUTE.LEAVE_DELETE;
@@ -668,7 +666,7 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
 /**********************************************************************
  * Project Utilization controller
  **********************************************************************/
- manhours.controller('ManHourCtrl', function($scope, $rootScope, $http, inout, ROUTE, MESSAGE, MODELMODE, projects, holidays, manhour, toast) {
+ manhours.controller('ManHourCtrl', function($scope, $rootScope, $http, inout, ROUTE, MESSAGE, MODELMODE, projects, holidays, manhour, toast, dateHelper) {
   // Inout Time - Dropdown Values
   $scope.inout_time_hours = inout.getHours();
   $scope.inout_time_minutes = inout.getMinutes();
@@ -720,8 +718,7 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
 
   var drawManHours = function(args){
     $scope.selecteddate = args.selectedDate;
-      // console.log($scope.selecteddate.getTime());
-     if(!args.manhour ||  new Date(args.manhour.date).getTime() !== $scope.selecteddate.getTime()){
+     if(!args.manhour ||  !dateHelper.isSameDay($scope.selecteddate,dateHelper.getLocalFromUTCTime( dateHelper.getDateFromString(args.manhour.date)))){
         // New Manhour
         $scope.manhour = {};
         $scope.manhour.date = $scope.selecteddate;
@@ -739,12 +736,11 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
         $scope.manhour.timeout_hour = $scope.new_manhour_template.timeout_hour;
         $scope.manhour.timeout_min = $scope.new_manhour_template.timeout_min;
      }else{
+         
         // Manhour already exists
         $scope.manhour = manhour.buildManhour(args.manhour);
+        
        
-        // console.log($scope.manhour.timein.getDate());
-        // console.log($scope.manhour.timeout.getDate());
-        // console.log("EXISTING" + JSON.stringify($scope.manhour));
      }
      $scope.updateInOut();
      $scope.updateTotalUtilization();
@@ -771,7 +767,7 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
 
     // Recalculate Office Duration
     $scope.officeDuration = ((($scope.manhour.timeout.getTime() - $scope.manhour.timein.getTime())/3600000) * 100 / 100).toFixed(2);
-
+     
     // Recalculate Undistributed hours
     $scope.undistributedHours = ($scope.officeDuration - $scope.totalUtilizedHours).toFixed(2);
   }
@@ -891,7 +887,12 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
       if($scope.manhour._id){
         saveMode = MODELMODE.UPDATE;
       }
-      //console.log(!$scope.manhour._id);
+      
+      // Convert dates to UTC date
+      $scope.manhour.date = dateHelper.getUTCTime($scope.manhour.date);
+      $scope.manhour.timein = dateHelper.getUTCTime($scope.manhour.timein);
+      $scope.manhour.timeout = dateHelper.getUTCTime($scope.manhour.timeout);
+      
       if(saveMode == MODELMODE.CREATE){
         $http.post(ROUTE.MANHOUR_SAVE, $scope.manhour)
         .success(function(data) {
@@ -935,27 +936,34 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
 manhours.service('dateHelper', function(){
   this.getDateFromString = function(date){
     var tempDate = new Date(date);
-    tempDate.setTime(tempDate.getTime() + tempDate.getTimezoneOffset()*60*1000 );
+    //tempDate.setTime(tempDate.getTime() + tempDate.getTimezoneOffset()*60*1000 );
     return tempDate;
   };
 
   this.getUTCTime = function(date){
-    return Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+    var utcTime = date.getTime() - ((date.getTimezoneOffset()/60) * 3600000); 
+    return new Date(utcTime);
   }
 
+  this.getLocalFromUTCTime = function(date){
+    var utcTime = date.getTime() + ((date.getTimezoneOffset()/60) * 3600000); 
+    return new Date(utcTime);
+  }
+    
   this.isSameDay = function(date1, date2){
     var _date1 = new Date(date1);
     _date1.setHours(0,0,0,0);
     var _date2 = new Date(date2);
     _date2.setHours(0,0,0,0);
-    return this.getUTCTime(_date1) == this.getUTCTime(_date2);
+    return _date1.getTime() == _date2.getTime();
   }
   
   this.getFirstDateOfMonth = function(date){
     var firstDateOfMonth = new Date(date);
     var month = firstDateOfMonth.getMonth();
     var year = firstDateOfMonth.getFullYear();
-    return new Date(year, month, 1);
+    var _firstDateOfMonth = new Date(year, month, 1);
+    return _firstDateOfMonth;
   }
   
   this.getLastDateOfMonth = function(date){
@@ -1067,7 +1075,7 @@ manhours.service('inout', function() {
     }
 });
 
-manhours.service('manhour', function($http, ROUTE){
+manhours.service('manhour', function($http, ROUTE,dateHelper){
 
   this.buildNewManhour = function(date){
     return $http.get(ROUTE.LOGGED_USER).then(
@@ -1111,7 +1119,7 @@ manhours.service('manhour', function($http, ROUTE){
   this.buildManhour = function(manhour){
     var timeindate =  new Date(manhour.timein);
     var timeoutdate =  new Date(manhour.timeout);
-    manhour.date = new Date(manhour.date);
+    manhour.date =  new Date(manhour.date);
     manhour.timein_hour = timeindate.getHours();
     manhour.timein_min = timeindate.getMinutes();
     manhour.timeout_hour = timeoutdate.getHours();
@@ -1129,7 +1137,8 @@ manhours.service('manhour', function($http, ROUTE){
     // Ensures that the timein/timeout are Date objects
     manhour.timein = timeindate;
     manhour.timeout = timeoutdate;
-
+   
+     console.log(manhour); 
     return manhour;
   } 
 });
