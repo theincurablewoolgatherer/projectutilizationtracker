@@ -51,7 +51,7 @@ font-size: .9em;
 margin-right: 15px !important;
 }
 .navbar-nav{
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 /* 
     Sometimes the sub menus get too large for the page and prevent the menu from scrolling, limiting functionality
@@ -89,6 +89,7 @@ margin-right: 15px !important;
 }
 .side-menu .navbar-header {
   width: 100%;
+  background: rgba(0, 0, 0, 0.25)
 }
 .side-menu .navbar-nav .active a {
   background-color: transparent;
