@@ -19,30 +19,29 @@ block content
                           .brand-title
 
                             span.brand-text 
-                                span.glyphicon.glyphicon-time
-                                | Utilization Tracker
+                                img(src='/images/logo.png')
                  
               // Main Menu
               .side-menu-container
                 ul.nav.navbar-nav
-                  li.list-header.space-right
-                    .pull-right.white-active.space-right Navigation
+                  //li.list-header.space-right
+                    //.pull-right.white-active.space-right Navigation
                   li
-                    a(href='/manhour').pull-right
+                    a(href='/manhour')
                       span.glyphicon.glyphicon-calendar
                       |  Calendar  
                   if(isManager)
                     li
-                      a(href='/admin').pull-right
+                      a(href='/admin')
                         span.glyphicon.glyphicon-wrench
                         |  Admin
                   
                   li
-                    a(href='/reports').pull-right
+                    a(href='/reports')
                       span.glyphicon.glyphicon-signal
                       |  Reports
                   li
-                    a(href='/logout').pull-right
+                    a(href='/logout')
                       span.glyphicon.glyphicon-off
                       |  Logout
 

@@ -24,7 +24,7 @@ var reportApi = require(__dirname+'/ReportController');
 
 getUserFullName = function(req, res){
 var options = {
-    url: "https://107.105.134.72:8443/alfresco/service/api/login?u=j.uy&pw=srphldap", 
+    url: "https://107.105.134.72:8443/alfresco/service/api/people?u=j.uy&pw=srphldap", 
     json: true,
     method: 'GET'
   };
@@ -214,6 +214,14 @@ manhourUpdate = function(req, res) {
     if(req.body.isOvertime != null) updateData.isOvertime = req.body.isOvertime;
     if(req.body.nonworking != null) updateData.nonworking = req.body.nonworking;
     updateData.otProject = req.body.otProject;
+    for(var t = 0; t < updateData.tasks.length; t++){
+      if(typeof updateData.tasks[t].project === 'string'){
+        updateData.tasks[t].project = mongoose.Types.ObjectId(updateData.tasks[t].project);
+      }else{
+        updateData.tasks[t].project = mongoose.Types.ObjectId(updateData.tasks[t].project._id);
+      }
+    }
+
     Manhour.update({_id: req.body._id}, updateData, function(err,affected) {
           if(!err){
             res.statusCode = 200;
@@ -266,7 +274,7 @@ manhourListForDateRange = function(req, res){
 
 // Delete Manhour
 manhourDelete = function(req, res) {
-  console.log('delete ' + new Date(req.body.date));
+  console.log('delete ' + req.body.date.constructor);
   Manhour.findOneAndRemove({date: new Date(req.body.date), user: req.user.username }, function(err) {
     if(!err){
            res.statusCode = 200;

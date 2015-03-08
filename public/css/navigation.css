@@ -19,23 +19,31 @@ background-color: rgba(248, 248, 248, 0.04) !important;
 .navbar-default .navbar-brand {
 color: #ffffff !important;  
 padding-left: 20px !important;
+float: left;
+height: 150px !important;
  
+}
+.brand-text{
+  position: relative;
+left: 20px;
+top: 50px;
 }
 .brand-text .glyphicon{
   margin-right: 14px;
 }
 .navbar-default .navbar-nav > li > a {
+
   font-size:15px;
-  font-family: 'Open Sans';
+  font-family: 'Roboto';
   font-weight: 300;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.65);
     transition: all .12s ease-in-out;
    -moz-transition: all .12s ease-in-out;
    -webkit-transition: all .12s ease-in-out;
 }
 .navbar-default .navbar-nav > li > a:hover {
 color: #ffffff;
-font-size:18px;
+
 }
 .list-header {
 color: #848c95;
@@ -71,9 +79,9 @@ margin-right: 15px !important;
 
 .side-menu {
   position: fixed;
-  width: 300px;
+  width: 210px;
   height: 100%;
-  background-color: #243d56;
+  background-color: rgba(0, 0, 0, 0.45);
  
 }
 .side-menu .navbar {
@@ -88,17 +96,18 @@ margin-right: 15px !important;
   border-right: 0px solid #93C54B;
 }
 .side-menu .navbar-nav li {
+  padding-left: 25px;
   display: block;
   width: 100%;
-  background: rgba(255, 255, 255, 0.02);;
-  border-bottom: 0px solid rgba(0,0,0,.1);
+  background: rgba(255, 255, 255, 0.0);;
+  border-bottom: 1px solid rgba(255,255,255,.05);
 }
 .navbar-inverse .navbar-nav > .active > a:hover
 {
   border-right: 0px;
 }
 .side-menu .navbar-nav li a {
-  padding: 15px;
+  padding: 30px;
 }
 .side-menu .navbar-nav li a .glyphicon {
   padding-right: 10px;

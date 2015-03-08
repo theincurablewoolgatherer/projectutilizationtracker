@@ -39,7 +39,7 @@ block navigationpage_content
                                                 {{cell.leave_all.length}}
                                         
                               
-        .col-lg-3(ng-controller="ManHourCtrl", ng-show = "!showForm")
+        .col-lg-3(ng-controller="ManHourCtrl")
                 
             .row
                 .panel.panel
@@ -90,7 +90,7 @@ block navigationpage_content
 
                           .pull-right
                             button.btn.btn-primary.space-right(ng-click='deleteManhour()', ng-show= 'manhour._id') Delete
-                            button.btn.btn-primary(ng-click='saveManhour()') Save
+                            button.btn.btn-primary(ng-click='saveManhour()', ng-disabled = "!saveEnabled") Save
 
             .row
                 .panel.panel

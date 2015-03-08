@@ -2,9 +2,11 @@ extends base
 block resources
     link(rel='stylesheet', href='/css/login.css')
 block content
+    img.loginlogo(src='/images/logo.png')
     div.wrapper(ng-controller="LoginCtrl")
+        
         form.form-signin(ng-submit = "login()", method = "post")
-            h3.form-signin-heading Utilization Tracker
+            h3.form-signin-heading
             input.form-control(ng-model = "user.username", type='text', placeholder = "Username", required='', autofocus='', pattern="([a-zA-Z0-9\.]+)")   
             input.form-control(ng-model = "user.password", type='password', placeholder = "Password", required='true')
             button.btn.btn-lg.btn-primary.btn-block(type='submit') Login
