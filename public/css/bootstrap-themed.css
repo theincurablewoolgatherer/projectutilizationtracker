@@ -11,31 +11,54 @@ body {
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased !important;
 }
+.nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
+  color: #fff;
+  border-radius: 0;
+}
+.nav-pills{
+  margin-top: 15px;
+}
 .form-control:focus {
   border-color: #66afe9;
   outline: 0;
   -webkit-box-shadow: none;
           box-shadow: none;
 }
+.container-fluid{
+   padding-right: 0px;
+}
+.modal-open {
+    overflow-y: scroll !important;
+}
+.dropdown-menu{
+  padding-top:0px;
+  padding-bottom:0px;
+}
 ul.dropdown-menu{
     border-radius: 0px;
     border-top: 0px;}
+
 ul.dropdown-menu li a{
-   background: rgba(0,0,0,.7);
-   font-family: 'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif;
-   color: #ffffff;
-   font-size: 11px;
-   transition: all .25s ease-in-out;
-   -moz-transition: all .25s ease-in-out;
-   -webkit-transition: all .25s ease-in-out;
-   text-transform: uppercase;
-   font-weight: 300;
+  font-family: 'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif;
+  /* color: #ffffff; */
+  font-size: 12px;
+  /* transition: all .25s ease-in-out; */
+  -moz-transition: all .25s ease-in-out;
+  /* -webkit-transition: all .25s ease-in-out; */
+  text-transform: uppercase;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  font-weight: 300;
 }
+
 .panel{
-    opacity: .85;
+    
     transition: opacity .35s ease-in-out;
    -moz-transition: opacity .35s ease-in-out;
    -webkit-transition: opacity .35s ease-in-out;
+  border-radius: 0 !important;
+  margin-bottom: 10px;
+  -webkit-box-shadow: 0 1px 1px rgba(37, 48, 50, 0.19);
 }
 .panel:hover{
     opacity: 1;
@@ -44,19 +67,34 @@ h1,h2,h3,h4,h5,h6{
     font-family: 'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif;
     font-weight: 300;
 }
+h3{
+  opacity: .65;
+}
 .btn-primary {
 color: #FFFEFE;
-background-color: #529ECC;
-border-radius: 3px;
-font-weight: bold;
-font-size: 1.3em;
-border: 0px solid #666666;
+  background-color: #529ECC;
+ 
+  
 }
 
+.btn{
+   border-radius: 0px;
+  border-width: 1px;
+  /* font-weight: bold; */
+  font-size: 12px;
+  height: 28px;
+  padding: 5px 12px;
+  margin-top: -2px;
+
+}
 .form-control{
-    border-radius: 0 !important;
+  border-radius: 0 !important;
+  display: block;
+  width: 100%;
+  height: 28px;
+  margin-top: -2px;
+  box-shadow: inset 0 0px 0px rgba(0, 0, 0, .075); 
 }
-
 .breadcrumb{
     background: transparent;
 }

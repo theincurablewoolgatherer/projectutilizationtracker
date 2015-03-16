@@ -59,7 +59,7 @@ manhours.config(['ngToastProvider', function(ngToast) {
       .error(function() {
                   // Error: authentication failed
                   toast.error(MESSAGE.LOGIN_FAILED);
-                  console.log(MESSAGE.LOGIN_FAILED);
+                  //console.log(MESSAGE.LOGIN_FAILED);
                   $scope.err = MESSAGE.LOGIN_DETAILS_INCORRECT;
                   $rootScope.message = MESSAGE.LOGIN_FAILED;
                   $scope.isLoginValid = false;
@@ -138,7 +138,7 @@ manhours.config(['ngToastProvider', function(ngToast) {
     })
     .error(function() {
       toast.error(MESSAGE.SAVE_PROJECT_FAILED);
-      console.log(MESSAGE.SAVE_PROJECT_FAILED);
+      //console.log(MESSAGE.SAVE_PROJECT_FAILED);
     });
   }
 });
@@ -191,10 +191,12 @@ manhours.controller('ReportCtrl', function($scope, $rootScope, $http, projects, 
     $http.get(url).then(
       function(manhours) {
         $scope.result = manhours.data;
+        $scope.showLeaves = Object.keys(manhours.data.leaveSummary).length > 0;
+       
         // console.log($scope.result);
       });
-    // console.log("===============");
-    // console.log(url);
+     //console.log("REPORT");
+     //console.log(url);
   }
 
   $scope.printReport = function(){
@@ -218,7 +220,7 @@ manhours.controller('HolidaysCtrl', function($scope, $rootScope, $http, ROUTE, h
     });
     $rootScope.$broadcast("loadHolidays");
     $scope.showHolidayForm = function(holiday){
-      console.log($rootScope.clientTimeZoneOffset);
+      //console.log($rootScope.clientTimeZoneOffset);
 
       // Do not allow saving of record if TimeZone Changed in client
       if(validation.isTimeZoneChanged($rootScope.clientTimeZoneOffset)){
@@ -285,7 +287,7 @@ manhours.controller('HolidaysCtrl', function($scope, $rootScope, $http, ROUTE, h
     })
     .error(function(err) {
       toast.error(err);
-      console.log(err);
+     // console.log(err);
     });
   }
 
@@ -343,7 +345,7 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
 /**********************************************************************
  * Calendar controller
  **********************************************************************/
- manhours.controller('CalendarCtrl', function($scope, $rootScope, $http, $modal, users, CALENDARCELL, CALENDAR, ROUTE, MODELMODE, holidays, validation, toast, dateHelper) {
+ manhours.controller('CalendarCtrl', function($scope, $rootScope, $http, $modal, users, CALENDARCELL, CALENDAR, ROUTE, MODELMODE, projects, holidays, validation, toast, dateHelper) {
  
     $scope.cal_day_names = CALENDAR.DAYS;
     $scope.cal_months_labels = CALENDAR.MONTHS;
@@ -355,7 +357,7 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
     $scope.month_leaves_all = [];
     $scope.month_manhours = [];
     $scope.showForm = true;
-
+    $scope.showAllLeaves = false;
     $rootScope.clientTimeZoneOffset = new Date().getTimezoneOffset();
 
     // Receive broadcast to redraw calendar
@@ -397,7 +399,14 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
             if(index >= 1 && index <= day_count){
               daynum = index;
             }
-            week_days.push({index: index, date: date, celltype: celltype, contextMenuOptions: $scope.contextMenuOptions});
+            if(date.getDay() === 0 || date.getDay() === 6){
+              holidayWeekendText = "Weekend";
+              showContextMenu = false;
+            }else{
+              holidayWeekendText = null;
+              showContextMenu = true;
+            }
+            week_days.push({index: index, date: date, celltype: celltype, contextMenuOptions: $scope.contextMenuOptions, showContextMenu: showContextMenu, holidayWeekendText: holidayWeekendText});
          }
          $scope.cal_month_day_weeks.push(week_days);
        }
@@ -476,10 +485,10 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
     var drawCalendarDetails = function(date){
        // 1. Draw Holidays in Calendar Cells
        var firstOfMonth = dateHelper.getUTCTime(dateHelper.getFirstDateOfMonth(date));
-       var lastOfMonth = dateHelper.getLastDateOfMonth(date);
+       var lastOfMonth = dateHelper.getUTCTime(dateHelper.getLastDateOfMonth(date));
        holidays.getHolidaysInDateRange(firstOfMonth, lastOfMonth).success(
         function(result){
-          console.log(result);
+         // console.log(result);
           for(var w = 0; w < $scope.cal_month_day_weeks.length; w++){
             for(var d = 0; d < $scope.cal_month_day_weeks[w].length; d++){
               for(var l = 0; l < result.length; l++){
@@ -487,6 +496,8 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
                 var cellDay = $scope.cal_month_day_weeks[w][d].date;  
                 if(dateHelper.isSameDay(holidayDay, cellDay)){
                    $scope.cal_month_day_weeks[w][d].holiday = result[l];
+                   $scope.cal_month_day_weeks[w][d].showContextMenu = false;
+                   $scope.cal_month_day_weeks[w][d].holidayWeekendText = "Holiday";
                 }
               }
             }
@@ -496,32 +507,53 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
           toast.error(error);
         });
 
-      
-         
-        // 2. Draw Leave Count/Show Leaves link for each Calendar Cell
-        var leave_url_all = ROUTE.USER_LEAVES_ALL + "from/" + firstOfMonth.getTime()+"/to/"+lastOfMonth.getTime()+"?"+new Date().getTime();
-        $http.get(leave_url_all).then(
-          function(leaves){
-              for(var w = 0; w < $scope.cal_month_day_weeks.length; w++){
-                for(var d = 0; d < $scope.cal_month_day_weeks[w].length; d++){
-                  var day_leaves = [];
-                  for(var l = 0; l < leaves.data.length; l++){
-                    var leaveDay =  dateHelper.getLocalFromUTCTime(dateHelper.getDateFromString(leaves.data[l].date));
-                    var cellDay = $scope.cal_month_day_weeks[w][d].date;
-                     
-                    if(dateHelper.isSameDay(leaveDay, cellDay)){
-                      day_leaves.push(leaves.data[l]);
-                      // console.log($scope.cal_month_day_weeks[w][d].date + " LEAVE: " + leaveDay + " = " + leaves.data[l].user.username);
-                    }
-                  $scope.cal_month_day_weeks[w][d].leave_all = day_leaves;
-                  }
-                }
-              }
-        });
+        var isTeamMate = function(userMates, other_user){
+          for(var u = 0; u < userMates.length; u++){
+            if(userMates[u] === other_user){
+              return true;
+            }
+          }
+          return false;
+        }
+        
        
        // 3. Draw Current Logged on User UI specifics
        $http.get(ROUTE.LOGGED_USER).then(
             function(result) {
+                var user_mates = [];
+                users.getProjectMates(result.data.username).then(function(data){
+                  user_mates = data;
+                  //console.log(user_mates);
+                });
+
+                // 2. Draw Leave Count/Show Leaves link for each Calendar Cell
+                var leave_url_all = ROUTE.USER_LEAVES_ALL + "from/" + firstOfMonth.getTime()+"/to/"+lastOfMonth.getTime()+"?"+new Date().getTime();
+               // console.log(leave_url_all);
+                $http.get(leave_url_all).then(
+                  function(leaves){
+                      for(var w = 0; w < $scope.cal_month_day_weeks.length; w++){
+                        for(var d = 0; d < $scope.cal_month_day_weeks[w].length; d++){
+                          var day_leaves = [];
+                          var team_day_leaves = [];
+                          for(var l = 0; l < leaves.data.length; l++){
+                            var leaveDay =  dateHelper.getLocalFromUTCTime(dateHelper.getDateFromString(leaves.data[l].date));
+                            var cellDay = $scope.cal_month_day_weeks[w][d].date;
+                             
+                            if(dateHelper.isSameDay(leaveDay, cellDay)){
+                              day_leaves.push(leaves.data[l]);
+                              if(isTeamMate(user_mates,leaves.data[l].user.username)){
+                                team_day_leaves.push(leaves.data[l]);
+                              }
+                             // console.log(leaves.data[l].user);
+                            }
+                          $scope.cal_month_day_weeks[w][d].leave_all = day_leaves;
+                          $scope.cal_month_day_weeks[w][d].leave_teammates = team_day_leaves;
+
+                          }
+                        }
+                      }
+                });
+
                 // 3.1 Draw Leave text for the Current Logged on User
                 var leave_url = ROUTE.USER_LEAVES + result.data._id + "/from/"+firstOfMonth.getTime()+"/to/"+lastOfMonth.getTime()+"?"+new Date();
                 $http.get(leave_url).then(
@@ -562,6 +594,11 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
       });
     }
     
+    $scope.setShowAllLeaves = function(val){
+      $scope.showAllLeaves = val;
+      toast.leaveToggled(val);
+    };
+
     $scope.applyLeave = function(date, type, mode){
       var leaveDate = dateHelper.getUTCTime(date);
       var leave = {date: leaveDate, type: type};

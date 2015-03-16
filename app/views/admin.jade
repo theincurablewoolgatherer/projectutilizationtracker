@@ -1,11 +1,8 @@
 extends navigationpage
 block navigationpage_content
-    h2.white  Admin 
-    ol.breadcrumb
-      li
-        a(href='/').white Home
-      li.active.white-active Admin
-
+    .row.top-banner
+      h1 Admin
+    br
     br
     .row
         .col-lg-4(ng-controller="ProjectsCtrl")

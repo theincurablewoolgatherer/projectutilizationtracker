@@ -1,11 +1,8 @@
 extends navigationpage
 block navigationpage_content
-    h2.white  Reports 
-    ol.breadcrumb
-      li
-        a.white(href='/') Home
-      li.active.white-active Reports
-
+    .row.top-banner
+      h1 Reports
+    br
     br
     .row(ng-controller="ReportCtrl")
         .col-lg-2
@@ -41,19 +38,19 @@ block navigationpage_content
                     i.glyphicon.glyphicon-print.space-right
                     | Print View
         .col-lg-10.report
-            h3.white {{project.name}}   
+            h3 {{project.name}}   
             .row
                 .col-lg-3
-                    h3(ng-show = "result.dailyReport.length == 0").white-active 
+                    h3(ng-show = "result.dailyReport.length == 0 && !result.leaveSummary")
                         i.glyphicon.glyphicon-warning-sign.space-right
                         | No data available
-                    h2(ng-show = "result.dailyReport.length > 0").white Daily Utilization
-                    ul(ng-show = "result.dailyReport.length > 0").white
+                    h2(ng-show = "result.dailyReport.length > 0") Daily Utilization
+                    ul(ng-show = "result.dailyReport.length > 0")
                         li(ng-repeat="dateReport in result.dailyReport track by $index")
                             h3
                                 {{dateReport.date | date:"MMM d, y"}}
                             .row
-                                table.white
+                                table
                                     tr(ng-repeat="manhour in dateReport.manhours track by $index")
                                          td
                                             h5 {{  $index + 1}}. {{manhour.user}}
@@ -61,33 +58,34 @@ block navigationpage_content
                                               li(ng-repeat="task in manhour.tasks", ng-show = "task.project == project._id && task.duration > 0")
                                                   {{task.task}} : {{task.duration}} {{ task.duration > 1 ? 'hrs' : 'hr'}}
                 .col-lg-3(ng-show = "result.dailyReport.length > 0")
-                    h2(ng-show = "result.dailyReport.length > 0").white Manhour
-                        ul.white
+                    h2(ng-show = "result.dailyReport.length > 0") Manhour
+                        ul
                             li(ng-repeat="(member, tasks) in result.memberSummary")
                                 h3
                                     {{ member }}
-                                ul.white
+                                ul
                                     li(ng-repeat="(taskname, duration) in tasks", ng-show = "duration > 0")
                                         h5 {{taskname }} : {{duration}}
-                .col-lg-3(ng-show = "result.dailyReport.length > 0")
-                    h2().white Tasks
-                        ul.white
-                            li(ng-repeat="(key, value) in result.taskSummary")
-                                h4
-                                    {{ key }} : {{ value }}
-                    h2().white In/Out
-                        ul.white
-                            li(ng-repeat="(key, value) in result.inOutSummary")
-                                h4
-                                    {{ key }} : {{ value }}
+                .col-lg-3(ng-show = "result.dailyReport.length > 0 || result.leaveSummary")
+                     div(ng-show = "result.dailyReport.length > 0")
+                        h2() Tasks
+                            ul
+                                li(ng-repeat="(key, value) in result.taskSummary")
+                                    h4
+                                        {{ key }} : {{ value }}
+                        h2() In/Out
+                            ul
+                                li(ng-repeat="(key, value) in result.inOutSummary")
+                                    h4
+                                        {{ key }} : {{ value }}
 
-                     h2(ng-show = "result.leaveSummary").white Leaves
-                        ul.white
+                     h2(ng-show = "result.leaveSummary && showLeaves") Leaves 
+                        ul
                             li(ng-repeat="(member, leaves) in result.leaveSummary", ng-show = "leaves.length > 0")
                                 h3
                                     {{ member }}
                                 ol
                                     li(ng-repeat="leave in leaves")
                                         h4 {{ leave.date | date:"MM/dd/y"}} - {{ leave.type}}
-           
+                   
                 

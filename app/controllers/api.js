@@ -188,6 +188,26 @@ userProjectList = function(req, res){
   });
 }
 
+// Get List of Projects of user
+userTeamMates = function(req, res){
+  Project.find({members: { username: req.params.user } },
+    function (err, projects) {
+      var mates = [];
+      if (err) {
+        res.statusCode = 500;
+        res.send({error: err});
+      } else {
+        res.statusCode = 200;
+        for(var p = 0; p < projects.length; p++){
+          for(var m = 0; m < projects[p].members.length; m++){
+            mates.push(projects[p].members[m].username);
+          }
+        }
+      }
+      return res.json(mates);
+  });
+}
+
 // Create Manhour
 manhourCreate = function(req, res) {
   // error trap: loggedinser == manhour.user
@@ -236,6 +256,21 @@ manhourUpdate = function(req, res) {
 
 
 // Get Manhour Details
+manhourDetailsById = function(req, res){
+  Manhour.findOne({
+   _id: req.params.id
+  }, function (err, manhour) {
+    if (err) {
+      res.statusCode = 500;
+      res.send({error: err});
+    } else {
+      res.statusCode = 200;
+    }
+   
+    return res.json(manhour);
+  });
+}
+
 manhourDetails = function(req, res){
   var mh_date = new Date(parseInt(req.params.date));
   
@@ -442,6 +477,40 @@ reportForProjectDateRange = function(req, res){
   
 }
 
+// Migrate
+migrateManhour = function(req, res) {
+    var updateData = {};
+    if(req.body.date) updateData.date = new Date(req.body.date);
+    if(req.body.timein) updateData.timein = new Date(req.body.timein);
+    if(req.body.timeout) updateData.timeout = new Date(req.body.timeout);
+
+    Manhour.update({_id: req.body._id}, updateData, function(err,affected) {
+          if(!err){
+            res.statusCode = 200;
+            return res.send({status: 'OK'});
+          }else{
+            res.statusCode = 500;
+
+            return res.send({error : err});
+        }
+    });    
+}   
+
+migrateLeave = function(req, res) {
+    var updateData = {};
+    if(req.body.date) updateData.date = new Date(req.body.date);
+    Leave.update({_id: req.body._id}, updateData, function(err,affected) {
+          if(!err){
+            res.statusCode = 200;
+            return res.send({status: 'OK'});
+          }else{
+            res.statusCode = 500;
+
+            return res.send({error : err});
+        }
+    });    
+}
+
 //========================================================
 // II. Controller URL to Action mapping
 //========================================================
@@ -452,17 +521,19 @@ app.get('/user/:username', userDetails);
 app.post('/project/new', projectCreate);
 app.get('/project/list', projectList);
 app.get('/project/list/of/:username', userProjectList);
+app.get('/user/mates/:user', userTeamMates);
 app.get('/project/:id', projectDetails);
 app.post('/manhour/new', manhourCreate);
 app.put('/manhour/update', manhourUpdate);
 app.post('/manhour/delete', manhourDelete);
 app.get('/manhour/:date/of/:username', manhourDetails);
 app.get('/manhour/of/:username/from/:start/to/:end', manhourListForDateRange);
+app.get('/manhour/:id', manhourDetailsById);
 app.post('/leave/new', leaveCreate);
 app.post('/leave/delete', leaveDelete);
 app.get('/leave/of/:userid/from/:start/to/:end', userLeaves);
 app.get('/leave/from/:start/to/:end', userAllLeaves);
-app.post('/holiday/new',holidayCreate);
+app.post('/holiday/new', holidayCreate);
 app.get('/report/of/:projectid/from/:start/to/:end', reportForProjectDateRange);
 
 app.get('/holiday/list/from/:start/to/:end', holidayListForDateRange);
@@ -470,6 +541,11 @@ app.get('/holiday/list',holidayList);
 app.get('/holiday/:date',holidayByDate);
 app.post('/holiday/delete',holidayDelete);
 app.get('/user/fullname', getUserFullName);
+
+
+app.post('/migrate/manhour/update', migrateManhour);
+app.post('/migrate/leave/update', migrateLeave);
+
 module.exports = app;
 
 

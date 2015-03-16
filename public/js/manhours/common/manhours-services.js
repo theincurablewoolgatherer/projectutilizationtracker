@@ -101,6 +101,7 @@ manhours.service('projects', function($http, ROUTE, MESSAGE) {
       }
     );
   }
+
 });
 
 // Holiday Model Http Services
@@ -120,7 +121,7 @@ manhours.service('holidays', function($http, ROUTE, MESSAGE, dateHelper) {
 
   this.getHolidaysInDateRange = function(startDate, endDate) {
     var url = ROUTE.HOLIDAY_LIST + "/from/" + startDate.getTime()+"/to/"+endDate.getTime()+"?"+new Date();
-    console.log(url);
+   // console.log(url);
     return $http.get(url);
   };
 
@@ -137,6 +138,13 @@ manhours.service('users', function($http, ROUTE) {
         return result.data;
     });
   };
+
+  this.getProjectMates = function(user){
+    return $http.get(ROUTE.USER_PROJECT_MATES + user).then(
+      function(result) {
+        return result.data;
+    });
+  }
 });
 
 manhours.service('dateHelper', function(){
@@ -197,6 +205,13 @@ manhours.service('toast', function(ngToast){
       });
     }
 
+    this.leaveToggled = function(showAll){
+      var msgString = showAll ? "Showing all leaves" : "Show leaves of teammates";
+      var msg = ngToast.create({
+        content: msgString
+      });
+    }
+
     this.error = function(error){
       var msg = ngToast.create({
         content: error,
@@ -212,7 +227,7 @@ manhours.service('tags', function($q, users) {
         var results = [];
         
         users.getAll().then(function(data){
-          console.log(data);
+          //console.log(data);
           var userlist = data;
           for(i = 0; i < userlist.length; i++){
             if (userlist[i].username.indexOf(query) == 0) {

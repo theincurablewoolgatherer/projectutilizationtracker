@@ -1,5 +1,5 @@
 body {
-	background:#2C4762;
+	background:#E7EBEE;
 }
 .wrapper {	
 	margin-top: 130px;
@@ -33,7 +33,7 @@ transform-origin: 50% 50%;
 	padding: 15px 35px 45px;
 	margin: 0 auto;
 	background-color: #fff;
-	border-radius: 3px;
+	border-radius: 0;
 
 	animation: divShow ease 1.2s;
 animation-iteration-count: 1;

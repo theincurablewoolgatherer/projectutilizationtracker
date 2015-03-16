@@ -35,11 +35,11 @@ block content
                       a(href='/admin')
                         span.glyphicon.glyphicon-wrench
                         |  Admin
-                  
-                  li
-                    a(href='/reports')
-                      span.glyphicon.glyphicon-signal
-                      |  Reports
+                  if(isManager)
+                    li
+                      a(href='/reports')
+                        span.glyphicon.glyphicon-signal
+                        |  Reports
                   li
                     a(href='/logout')
                       span.glyphicon.glyphicon-off

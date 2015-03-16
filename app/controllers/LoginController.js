@@ -31,6 +31,15 @@ showPartial = function (req, res) {
    var view = req.params.view;
    res.render('partials/' + view);
 }
+
+// Migrate
+showMhMigrate = function(req, res){
+    res.render('mhMigrate', { title: 'MH Migrate' });
+}
+
+showLeaveMigrate = function(req, res){
+    res.render('leaveMigrate', { title: 'Leave Migrate' });
+}
 //========================================================
 // II. Controller URL to Action mapping
 //========================================================
@@ -43,4 +52,8 @@ app.get('/loggeduser', getLoggedUser);
 // route to resolve angular partials
 app.get('/partials/:view', showPartial);
 
+
+// Migrate
+app.get('/migrate/mh', showMhMigrate);
+app.get('/migrate/leave', showLeaveMigrate);
 module.exports = app;

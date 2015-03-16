@@ -228,8 +228,8 @@
                     // Update the position of the newly added context menu.
                     scope.menu    = $angular.element(nativeElement.childNodes[childCount - 1]);
                     var scrollOffset = (document.documentElement && document.documentElement.scrollTop) || document.body.scrollTop;
-                    var adjustForSideNavX = 320;
-                    var adjustForSideNavY = 150 - scrollOffset;  
+                    var adjustForSideNavX = 220;
+                    var adjustForSideNavY = 135 - scrollOffset;  
                     if(window.innerWidth < 769){
 
                         adjustForSideNavX = 0;

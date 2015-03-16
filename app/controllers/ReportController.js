@@ -36,9 +36,10 @@ app.getReportData = function(req, res, callback){
   var memberSummary = {};
   var report = {};
   var leaveSummary = {};
-  var inOutSummary = {'Total Office Hours': 0, 'Total Non-Working': 0, 'Total Utilization': 0, 'Total Paid Overtime': 0, 'Total Unpaid Overtime': 0, 'Total Overtime': 0};
+  var inOutSummary = {'Total Office Hours': 0, 'Total Non-Working': 0, 'Total Utilization': 0, 'Total Paid Overtime': 0, 'Total Unpaid Overtime': 0, 'Total Overtime': 0, 'Total Leaves': 0};
   for (var d = tempDate; d <= end; d.setDate(d.getDate() + 1)) {
-    _dailyReport.push({date: new Date(d), manhours: []});
+    var utcDate = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    _dailyReport.push({date: utcDate, manhours: []});
   }
 
   Manhour.find({
@@ -49,6 +50,7 @@ app.getReportData = function(req, res, callback){
       res.statusCode = 500;
       res.send({error: err});
     } else {
+
       Holiday.find(function (err, holidays) {
         if (err) {
           res.statusCode = 500;
@@ -81,7 +83,7 @@ app.getReportData = function(req, res, callback){
             // Group manhours by date
             for(var m = 0; m < _manhours.length; m++){
               for(var d = 0; d < _dailyReport.length; d++){
-                if(new Date(_manhours[m].date).getTime() == new Date(_dailyReport[d].date).getTime()){
+                if(new Date(_manhours[m].date).getTime() == _dailyReport[d].date.getTime()){
                   _dailyReport[d].manhours.push(_manhours[m]);
                 }
               }
@@ -191,14 +193,19 @@ app.getReportData = function(req, res, callback){
                       for(var m = 0; m < members.length; m++){
                         if(leaves[l].user.username == members[m].username){
                           report.leaveSummary[leaves[l].user.username].push(leaves[l]);
+                          inOutSummary['Total Leaves']++;
                         }
                       }
                       
                       //}
                     }
-
+                    for (var property in report.leaveSummary) {
+                        if (report.leaveSummary.hasOwnProperty(property) && report.leaveSummary[property].length == 0) {
+                            delete report.leaveSummary[property];
+                        }
+                    }
                     if(Object.keys(report.leaveSummary).length == 0){
-                     delete report.leaveSummary;
+                      delete report.leaveSummary;
                     }
                     return callback(report);
                 });
@@ -211,10 +218,17 @@ app.getReportData = function(req, res, callback){
     };
   });
 }
-
+function isAdmin(req, res, next) {
+    if (req.user && req.user.usertype != constants.USERTYPE_PROJECT_MANAGER){
+      var err = new Error('Forbidden');
+      err.status = 403;
+      return next(err);
+    }
+    return next();
+}
 //========================================================
 // II. Controller URL to Action mapping
 //========================================================
-app.get('/', showReportsView);
-app.get('/print/:projectname/:projectid/from/:start/to/:end', printReportsView);
+app.get('/', isAdmin, showReportsView);
+app.get('/print/:projectname/:projectid/from/:start/to/:end', isAdmin, printReportsView);
 module.exports = app;

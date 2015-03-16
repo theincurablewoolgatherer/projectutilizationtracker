@@ -1,0 +1,27 @@
+head
+  script(type='text/javascript', src='/js/thirdparty/jquery.min.js')
+  
+body
+  form(action = "/api/migrate/manhour/update", method = "post", name = "mh_form")
+    MH ID
+    br
+    input(name = "_id")
+    b(id = "loadMH") GET
+    hr
+    MH Date
+    br
+    input(name = "date")
+    b(id="old_date")
+    br
+    MH In
+    br
+    input(name = "timein")
+    b(id="old_timein")
+    br
+    MH Out
+    br
+    input(name = "timeout")
+    b(id="old_timeout")
+    br
+    input(type="submit")
+    script(type='text/javascript', src='/js/utils/migrate.js')
