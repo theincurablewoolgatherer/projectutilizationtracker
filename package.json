@@ -1,7 +1,7 @@
 {
   "name": "Manhours",
   "version": "0.0.0",
-  "description": "AppDev ManHours Tracker",
+  "description": "ASL Utilization Tracker",
   "main": "index.js",
   "scripts": {
     "start": "node ./bin/www"
@@ -22,6 +22,7 @@
     "express-session": "latest",
     "activedirectory": "latest",
     "request": "latest",
-    "fs": "latest"
+    "fs": "latest",
+    "excel-export": "latest"
   }
 }

@@ -14,7 +14,7 @@ var Holiday = require(__dirname+'/../models/Holiday');
 var mongoose = require("mongoose");
 var app = express.Router();
 var reportApi = require(__dirname+'/ReportController');
-
+var https = require('https');
 //========================================================
 // I. Controller actions
 //========================================================
@@ -24,19 +24,29 @@ var reportApi = require(__dirname+'/ReportController');
 
 getUserFullName = function(req, res){
 var options = {
-    url: "https://107.105.134.72:8443/alfresco/service/api/people?u=j.uy&pw=srphldap", 
-    json: true,
-    method: 'GET'
+   // url: "https://107.105.134.72:8443/alfresco/service/api/login?u=j.uy&pw=srphldap&format=json",
+    hostname: '107.105.134.72',
+    port: 8443,
+    path: '/alfresco/service/api/login?u=j.uy&pw=srphldap&format=json',
+    method: 'GET',
+    rejectUnauthorized: false,
+    requestCert: true,
+    agent: false
   };
-  request(options,
-    function(err, response, alfrescoUsers) {
-      if(err){
-        res.statusCode = 500;
-      }
-      res.statusCode = 200;
-      return response;
-    });
+  console.log("wee");
+  var req2 = https.request(options,
+   function(res) {
+  console.log("statusCode: ", res.statusCode);
+  console.log("headers: ", res.headers);
 
+  res.on('data', function(d) {
+    process.stdout.write(d);
+  });
+});
+ req2.end();
+ req2.on('error', function(e) {
+  console.error(e);
+});
 }
 userCreate = function(req, res) {
   var _usertype = constants.USERTYPE_DEVELOPER;
@@ -329,7 +339,11 @@ leaveCreate = function(req, res) {
     var endDate = new Date(startDate);
     endDate.setDate(endDate.getDate() + 1);
 
-    console.log("SELECTION: " +req.body.date);
+    if(!req.user){
+      res.statusCode = 500;
+      return res.send({error : "User session expired."});
+    }
+
     var leave = new Leave({
       date: new Date(req.body.date),
       user: req.user,
@@ -517,7 +531,9 @@ migrateLeave = function(req, res) {
 // app.post('/user/new', userCreate); unsafe
 app.get('/user/list', userList);
 app.put('/user/update', userUpdate);
+app.get('/user/fullname', getUserFullName);
 app.get('/user/:username', userDetails);
+
 app.post('/project/new', projectCreate);
 app.get('/project/list', projectList);
 app.get('/project/list/of/:username', userProjectList);
@@ -540,7 +556,7 @@ app.get('/holiday/list/from/:start/to/:end', holidayListForDateRange);
 app.get('/holiday/list',holidayList);
 app.get('/holiday/:date',holidayByDate);
 app.post('/holiday/delete',holidayDelete);
-app.get('/user/fullname', getUserFullName);
+
 
 
 app.post('/migrate/manhour/update', migrateManhour);

@@ -619,7 +619,8 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
           $rootScope.$broadcast("redrawCalendar");
         })
         .error(function(error) {
-          console.log(JSON.stringify(error));
+          toast.error(error.error);
+          console.log(JSON.stringify(error.error));
       });
 
     }
