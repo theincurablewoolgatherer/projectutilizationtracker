@@ -1,0 +1,15 @@
+head
+  script(type='text/javascript', src='/js/thirdparty/jquery.min.js')
+body
+  form(action = "/api/migrate/manhour/update_ot", method = "post", name = "mh_form")
+    MH ID
+    br
+    input(name = "_id")
+    b(id = "loadMHOT") GET
+    hr
+    | otProject
+    br
+    input(name = "otProject")
+    
+    input(type="submit")
+    script(type='text/javascript', src='/js/utils/migrate.js')

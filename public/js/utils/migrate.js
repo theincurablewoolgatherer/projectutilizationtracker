@@ -23,3 +23,12 @@ $("#loadMH").click(function(){
 
 });
 
+$("#loadMHOT").click(function(){
+	var url = "/api/manhour/"+$("input[name=_id]").val();
+	console.log(url);
+	$.getJSON(url, function(data) {
+		console.log("booo");
+		$("input[name=otProject]").val(data.otProject);
+	});
+
+});

@@ -509,7 +509,21 @@ migrateManhour = function(req, res) {
         }
     });    
 }   
+migrateManhourOT = function(req, res) {
+    var updateData = {};
+    if(req.body.otProject) updateData.otProject = mongoose.Types.ObjectId(req.body.otProject);
+  
+    Manhour.update({_id: req.body._id}, updateData, function(err,affected) {
+          if(!err){
+            res.statusCode = 200;
+            return res.send({status: 'OK'});
+          }else{
+            res.statusCode = 500;
 
+            return res.send({error : err});
+        }
+    });    
+}  
 migrateLeave = function(req, res) {
     var updateData = {};
     if(req.body.date) updateData.date = new Date(req.body.date);
@@ -561,7 +575,7 @@ app.post('/holiday/delete',holidayDelete);
 
 app.post('/migrate/manhour/update', migrateManhour);
 app.post('/migrate/leave/update', migrateLeave);
-
+app.post('/migrate/manhour/update_ot', migrateManhourOT);
 module.exports = app;
 
 

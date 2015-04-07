@@ -188,6 +188,7 @@ manhours.controller('ReportCtrl', function($scope, $rootScope, $http, projects, 
   $scope.updateReport = function(){
 
     var url = ROUTE.REPORT_PROJECTDATERANGE + $scope.project._id + '/from/' + $scope.startDate.getTime() + '/to/' + $scope.endDate.getTime();
+    console.log(url);
     $http.get(url).then(
       function(manhours) {
         $scope.result = manhours.data;
@@ -797,10 +798,14 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
     $scope.totalUtilizedHours = $scope.manhour.nonworking;
     for(var t = 0; t < $scope.manhour.tasks.length; t++){
       if(!isNaN($scope.manhour.tasks[t].duration)){
+        var project_id = ($scope.manhour.tasks[t].project.constructor === String) ? $scope.manhour.tasks[t].project : $scope.manhour.tasks[t].project._id;
         $scope.totalUtilizedHours += $scope.manhour.tasks[t].duration;
-        if(!$scope.projectUtilizationMap[$scope.manhour.tasks[t].project._id])
-            $scope.projectUtilizationMap[$scope.manhour.tasks[t].project._id] = 0;
-        $scope.projectUtilizationMap[$scope.manhour.tasks[t].project._id] += $scope.manhour.tasks[t].duration;
+
+        if(!$scope.projectUtilizationMap[project_id])
+            $scope.projectUtilizationMap[project_id] = 0;
+        $scope.projectUtilizationMap[project_id] += $scope.manhour.tasks[t].duration;
+        //console.log("WOW TASK");
+        //console.log("==>"+ project_id);
       }
     }
     $scope.totalUtilizedHours = $scope.totalUtilizedHours.toFixed(2);
@@ -820,9 +825,11 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
     
     // Show OT/Y Projects
     $scope.otprojects = [];
+    //console.log("USER PROJS " +$scope.user_projects.length );
     for(var p = 0; p < $scope.user_projects.length; p++){
       if($scope.projectUtilizationMap[$scope.user_projects[p]._id] && $scope.projectUtilizationMap[$scope.user_projects[p]._id] > 0){
         $scope.otprojects.push($scope.user_projects[p]);
+       
       }
     }
 
@@ -834,9 +841,6 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
       }
     }
     $scope.manhour.otProject = isCurrentOTProjectValid ? $scope.manhour.otProject : null;
-
-    //console.log($scope.projectUtilizationMap);
-    
 
     // Default OT/OTY Project
     if($scope.otprojects && $scope.showOvertimeOption && $scope.otprojects[0]){

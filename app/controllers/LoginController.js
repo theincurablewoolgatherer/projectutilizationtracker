@@ -36,7 +36,9 @@ showPartial = function (req, res) {
 showMhMigrate = function(req, res){
     res.render('mhMigrate', { title: 'MH Migrate' });
 }
-
+showMhMigrateOT = function(req, res){
+    res.render('mhOvertimeFix', { title: 'MH OT Migrate' });
+}
 showLeaveMigrate = function(req, res){
     res.render('leaveMigrate', { title: 'Leave Migrate' });
 }
@@ -55,5 +57,6 @@ app.get('/partials/:view', showPartial);
 
 // Migrate
 app.get('/migrate/mh', showMhMigrate);
+app.get('/migrate/mhot', showMhMigrateOT);
 app.get('/migrate/leave', showLeaveMigrate);
 module.exports = app;

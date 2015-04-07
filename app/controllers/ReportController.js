@@ -6,8 +6,6 @@ var Manhour = require(__dirname+'/../models/Manhour');
 var Project = require(__dirname+'/../models/Project');
 var Holiday = require(__dirname+'/../models/Holiday');
 var Leave = require(__dirname+'/../models/Leave');
-var nodeExcel = require('excel-export');
-
 //========================================================
 // I. Controller actions
 //========================================================
@@ -220,72 +218,6 @@ app.getReportData = function(req, res, callback){
     };
   });
 }
-
-getExcelReport = function(req, res){
-  var projectTasks = [];
-  var projectMembers = [];
-  Project.findOne({
-    _id: req.params.id
-  }, function (err, project) {
-    if (err) {
-      res.statusCode = 500;
-      res.send({error: err});
-    } else {
-      res.statusCode = 200;
-    }
-    return res.json(project);
-  });
-  app.getReportData(req, res, generateExcel());
-/*
-  var conf ={};
-  //conf.stylesXmlFile = "styles.xml";
-  conf.cols = [{
-      caption:'string',
-      type:'string',
-      beforeCellWrite:function(row, cellData){
-           return cellData.toUpperCase();
-      },
-      width:28.7109375
-  },{
-      caption:'date',
-      type:'date',
-      beforeCellWrite:function(){
-          var originDate = new Date(Date.UTC(1899,11,30));
-          return function(row, cellData, eOpt){
-              if (eOpt.rowNum%2){
-                  eOpt.styleIndex = 1;
-              }  
-              else{
-                  eOpt.styleIndex = 2;
-              }
-              if (cellData === null){
-                eOpt.cellType = 'string';
-                return 'N/A';
-              } else
-                return (cellData - originDate) / (24 * 60 * 60 * 1000);
-          } 
-      }()
-  },{
-      caption:'bool',
-      type:'bool'
-  },{
-      caption:'number',
-       type:'number'              
-  }];
-  conf.rows = [
-      ['pi', new Date(Date.UTC(2013, 4, 1)), true, 3.14],
-      ["e", new Date(2012, 4, 1), false, 2.7182],
-      ["M&M<>'", new Date(Date.UTC(2013, 6, 9)), false, 1.61803],
-      ["null date", null, true, 1.414]  
-  ];
-  var result = nodeExcel.execute(conf);
-  res.setHeader('Content-Type', 'application/vnd.openxmlformats');
-  res.setHeader("Content-Disposition", "attachment; filename=" + "Report.xlsx");
-  res.end(result, 'binary');
-  */
-}
-
-
 function isAdmin(req, res, next) {
     if (req.user && req.user.usertype != constants.USERTYPE_PROJECT_MANAGER){
       var err = new Error('Forbidden');
@@ -294,11 +226,9 @@ function isAdmin(req, res, next) {
     }
     return next();
 }
-
 //========================================================
 // II. Controller URL to Action mapping
 //========================================================
 app.get('/', isAdmin, showReportsView);
 app.get('/print/:projectname/:projectid/from/:start/to/:end', isAdmin, printReportsView);
-app.get('/excel/:projectname/:projectid/from/:start/to/:end', isAdmin, getExcelReport);
 module.exports = app;
