@@ -38,27 +38,27 @@ module.exports = function (passport) {
 
     // Authentication Logic
     passport.use(new LocalStrategy(function (username, password, done) {
-        var dn = 'uid=' + username + ',ou=users,dc=srph,dc=samsung,dc=net';
-        var ad = new activeDirectory({
-            url: 'ldap://107.105.134.72:389',  
-            baseDN: dn,
-            username: 'uid=' + username,
-            password: password
-        });
+        // var dn = 'uid=' + username + ',ou=users,dc=srph,dc=samsung,dc=net';
+        // var ad = new activeDirectory({
+        //     url: 'ldap://107.105.134.72:389',  
+        //     baseDN: dn,
+        //     username: 'uid=' + username,
+        //     password: password
+        // });
 
-        ad.authenticate(dn, password, function (err, user) {
-            if (err) {
-                console.log(TAG + 'Error Authenticating User: ' + username);
-                // return;
-                return done(err);
-            }
-            // Auth Check Logic
-            if (!user) {
-                console.log(TAG + 'Error Authenticating User: ' + username);
-                return done(null, false, {
-                    message: 'Incorrect mySingle Id or password.'
-                });
-            } else {
+        // ad.authenticate(dn, password, function (err, user) {
+            // if (err) {
+            //     console.log(TAG + 'Error Authenticating User: ' + username);
+            //     // return;
+            //     return done(err);
+            // }
+            // // Auth Check Logic
+            // if (!user) {
+            //     console.log(TAG + 'Error Authenticating User: ' + username);
+            //     return done(null, false, {
+            //         message: 'Incorrect mySingle Id or password.'
+            //     });
+            // } else {
                 User.findOne({
                     username: username
                 }, function (err, user) {
@@ -93,7 +93,7 @@ module.exports = function (passport) {
                         return done(null, user);
                     }
                 });
-            }
-        });
+            // }
+        // });
     }));
 };

@@ -6,6 +6,8 @@ var Manhour = require(__dirname+'/../models/Manhour');
 var Project = require(__dirname+'/../models/Project');
 var Holiday = require(__dirname+'/../models/Holiday');
 var Leave = require(__dirname+'/../models/Leave');
+var mongoose = require("mongoose");
+var csv = require('express-csv');
 //========================================================
 // I. Controller actions
 //========================================================
@@ -20,6 +22,111 @@ printReportsView = function(req, res){
     report.end =  new Date(parseInt(req.params.end));
 		res.render('reportPrint', { title: 'ASL Utilization Tracker',  report: report});
 	});
+}
+
+getCsvReport = function(req, res){
+  app.getProjectManhours(
+    req.params.projectid, 
+    req.params.start, 
+    req.params.end,
+    function(csv_data){
+      res.setHeader('Content-disposition', 'attachment; filename=manhours.csv');
+      var csv_file = [];
+      var space = [];
+      var project_name = [csv_data.project.name];
+      csv_file.push(project_name);
+      var date;
+      for(date in csv_data.utilization){
+        csv_file.push(space);
+        var utc_date = new Date(parseInt(date));
+        utc_date = new Date(parseInt(date) + ((utc_date.getTimezoneOffset()/60) * 3600000)); 
+        utc_date = (utc_date.getMonth()+1) + "/"+utc_date.getDate() + "/" +utc_date.getFullYear();
+        csv_file.push([utc_date]);
+        csv_file.push(["Member"].concat(csv_data.project.tasks).concat(["Total"]));
+        for(member in csv_data["utilization"][date]){
+          var member_row = [member];
+          var duration_total = 0;
+          for(task in csv_data["utilization"][date][member]){
+            var duration = csv_data["utilization"][date][member][task];
+            member_row.push(duration);
+            duration_total += duration;
+          }
+          // For total
+          member_row.push(duration_total);
+          csv_file.push(member_row);
+        }
+
+      }
+      res.csv(csv_file);
+    }
+  );
+}
+app.getProjectManhours = function(project_id, start_date, end_date, callback){
+  var start = new Date(parseInt(start_date));
+  start.setHours(0,0,0,0);
+  var end = new Date(parseInt(end_date));
+  end.setHours(23,59,59,0);
+  var projectid = project_id;
+  var csv_data = {};
+  var utilization = {};
+  // Get Project
+  Project.findOne({
+    _id: projectid
+  }, function (err, project) {
+    
+
+    // Get Tasks
+    var project_tasks = [];
+    for(var task = 0; task < project.tasks.length; task++){
+      project_tasks.push(project.tasks[task].task);
+    }
+
+    // Get Members
+    var project_members = [];
+    for(var member = 0; member < project.members.length; member++){
+      project_members.push(project.members[member].username);
+    }
+
+    // Build Daily CSV report objects
+    var tempDate = new Date(start);
+    for (var d = tempDate; d <= end; d.setDate(d.getDate() + 1)) {
+      var date_report = {};
+      var utc_date = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+
+      for(var member = 0; member < project_members.length; member++){
+        date_report[project_members[member]] = {};
+        for(var task = 0; task < project_tasks.length; task++){
+          date_report[project_members[member]][project_tasks[task]] = 0;
+        }
+      }
+      utilization[utc_date] = date_report;
+    }
+
+    // Retrieve Manhours that are:
+    // a. within the date range
+    // b. for this project
+    Manhour.find({
+      date: { $gte:start, $lte:end},
+      tasks: { $elemMatch : 
+        {project: mongoose.Types.ObjectId(projectid)}
+      }
+    }, function (err, manhours) {
+      for(var i = 0; i < manhours.length; i++){
+        var manhour = manhours[i];
+        var manhour_date = Date.UTC(manhour.date.getFullYear(), manhour.date.getMonth(), manhour.date.getDate());
+        for(var j = 0; j < manhour.tasks.length; j++){
+          var task = manhour.tasks[j];
+          if(utilization[manhour_date][manhour.user].hasOwnProperty(task.task)){
+            utilization[manhour_date][manhour.user][task.task] = task.duration || 0;
+          }
+        }
+      }
+
+      csv_data.project = {name: project.name, tasks: project_tasks};
+      csv_data.utilization = utilization;
+      return callback(csv_data);
+    });
+  });
 }
 
 app.getReportData = function(req, res, callback){
@@ -231,4 +338,5 @@ function isAdmin(req, res, next) {
 //========================================================
 app.get('/', isAdmin, showReportsView);
 app.get('/print/:projectname/:projectid/from/:start/to/:end', isAdmin, printReportsView);
+app.get('/csv/:projectid/from/:start/to/:end', getCsvReport);
 module.exports = app;
