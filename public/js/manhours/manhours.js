@@ -352,11 +352,12 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
 /**********************************************************************
  * Calendar controller
  **********************************************************************/
- manhours.controller('CalendarCtrl', function($scope, $rootScope, $http, $modal, users, CALENDARCELL, CALENDAR, ROUTE, MODELMODE, projects, holidays, validation, toast, dateHelper) {
+ manhours.controller('CalendarCtrl', function($scope, $rootScope, $http, $modal, users, CALENDARCELL, CALENDAR, LEAVE, ROUTE, MODELMODE, projects, holidays, validation, toast, dateHelper) {
  
     $scope.cal_day_names = CALENDAR.DAYS;
     $scope.cal_months_labels = CALENDAR.MONTHS;
     $scope.contextMenuOptions = CALENDAR.CONTEXT_MENU_ITEMS;
+    $scope.leaveTypes = LEAVE.types;
     $scope.cal_current_date;
     $scope.cal_month_day_weeks = [];
     $rootScope.cal_month_title = "";
@@ -425,7 +426,7 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
               holidayWeekendText = null;
               showContextMenu = true;
             }
-            week_days.push({index: index, date: date, celltype: celltype, contextMenuOptions: $scope.contextMenuOptions, showContextMenu: showContextMenu, holidayWeekendText: holidayWeekendText});
+            week_days.push({index: index, date: date, celltype: celltype, contextMenuOptions: $scope.contextMenuOptions, leaveTypes: $scope.leaveTypes, showContextMenu: showContextMenu, holidayWeekendText: holidayWeekendText});
          }
          $scope.cal_month_day_weeks.push(week_days);
        }
@@ -566,6 +567,14 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
                         var cellDay = $scope.cal_month_day_weeks[w][d].date;
                         if(dateHelper.isSameDay(leaveDay, cellDay)){
                            $scope.cal_month_day_weeks[w][d].leave = leaves.data[l];
+                           var leave_label;
+                           for(var leave_type = 0; leave_type < LEAVE.types.length; leave_type++){
+                              if(LEAVE.types[leave_type].type == leaves.data[l].type){
+                                leave_label = LEAVE.types[leave_type].label;
+                              }
+                           }
+                          
+                           $scope.cal_month_day_weeks[w][d].leave_label = leave_label;
                          }
                       }
                     }
@@ -595,8 +604,11 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
     }
 
     $scope.applyLeave = function(date, type, mode){
+      var leave_type_index = CALENDAR.CONTEXT_MENU_ITEMS.indexOf(type);
+      var leave_type = LEAVE.types[leave_type_index].type;
+
       var leaveDate = dateHelper.getUTCTime(date);
-      var leave = {date: leaveDate, type: type};
+      var leave = {date: leaveDate, type: leave_type};
       var leave_url = ROUTE.LEAVE_SAVE;
       // Do not allow saving of record if TimeZone Changed in client
       if(validation.isTimeZoneChanged($rootScope.clientTimeZoneOffset)){

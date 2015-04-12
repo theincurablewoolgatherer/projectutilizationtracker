@@ -46,7 +46,7 @@ block navigationpage_content
                                       span.month-day-holiday {{cell.holiday.name}}
                                       .month-day-details
                                         //{{cell.date}}
-                                        .month-day-leave {{cell.leave.type}}
+                                        .month-day-leave {{cell.leave_label}}
                                         .month-day-leaves(ng-show = "cell.leave_all.length > 0 && showAllLeaves") 
                                             a.pull-right(ng-click = "showLeaves(cell.date, cell.leave_all)", title = "{{cell.leave_all.length}} resource{{cell.leave_all.length == 1 ? ' is' : 's are'}} on leave") 
                                                 span.glyphicon.glyphicon-user

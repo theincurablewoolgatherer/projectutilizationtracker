@@ -1,15 +1,26 @@
 ul.dropdown-menu.calendar-context-menu(role='menu')
     
     li(style= "display: {{ showContextMenu ? 'block' : 'none'}}")
-      a(ng-click="applyLeave(cell.date, contextMenuOptions[0], {{ leave.type == contextMenuOptions[0] ? '0' : '1'}})") 
+      a(ng-click="applyLeave(cell.date, contextMenuOptions[0], {{ leave.type == leaveTypes[0].type ? '0' : '1'}})") 
         {{contextMenuOptions[0]}}
-        span.glyphicon.glyphicon-ok.pull-right(style= "display: {{ leave.type == contextMenuOptions[0] ? 'inline-block' : 'none'}}")
+        span.glyphicon.glyphicon-ok.pull-right(style= "display: {{ leave.type == leaveTypes[0].type? 'inline-block' : 'none'}}")
     li(style= "display: {{ showContextMenu ? 'block' : 'none'}}")
-      a(ng-click="applyLeave(cell.date, contextMenuOptions[1], {{ leave.type == contextMenuOptions[1] ? '0': '1'}})") 
+      a(ng-click="applyLeave(cell.date, contextMenuOptions[1], {{ leave.type == leaveTypes[1].type ? '0': '1'}})") 
         {{contextMenuOptions[1]}}
-        span.glyphicon.glyphicon-ok.pull-right(style= "display: {{leave.type == contextMenuOptions[1] ? 'inline-block' : 'none'}}")
-        
+        span.glyphicon.glyphicon-ok.pull-right(style= "display: {{leave.type == leaveTypes[1].type ? 'inline-block' : 'none'}}")
+
+
+    li(style= "display: {{ showContextMenu ? 'block' : 'none'}}")
+      a(ng-click="applyLeave(cell.date, contextMenuOptions[2], {{ leave.type == leaveTypes[2].type ? '0': '1'}})") 
+        {{contextMenuOptions[2]}}
+        span.glyphicon.glyphicon-ok.pull-right(style= "display: {{leave.type == leaveTypes[2].type ? 'inline-block' : 'none'}}")
+    li(style= "display: {{ showContextMenu ? 'block' : 'none'}}")
+      a(ng-click="applyLeave(cell.date, contextMenuOptions[3], {{ leave.type == leaveTypes[3].type ? '0': '1'}})") 
+        {{contextMenuOptions[3]}}
+        span.glyphicon.glyphicon-ok.pull-right(style= "display: {{leave.type == leaveTypes[3].type ? 'inline-block' : 'none'}}")
+
     li(style= "display: {{ showContextMenu ? 'block' : 'none'}}")
       a(ng-click="showLeaves(cell.date, cell.leave_all)") View Leaves
+      
     li(style= "display: {{ !showContextMenu ? 'block' : 'none'}}")
       a {{holidayWeekendText}}
