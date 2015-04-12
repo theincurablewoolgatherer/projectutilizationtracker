@@ -350,9 +350,11 @@ leaveCreate = function(req, res) {
       type: req.body.type,
       filedate: new Date()
     });
+
+    console.log(leave.user);
     var upsertData = leave.toObject();
     delete upsertData._id;
-    Leave.update({user: mongoose.Types.ObjectId(leave.user), date: leave.date}, upsertData, {upsert: true}, function (err) {
+    Leave.update({user: mongoose.Types.ObjectId(leave.user._id), date: leave.date}, upsertData, {upsert: true}, function (err) {
         if(!err){
            res.statusCode = 200;
               return res.send({status: 'OK'});

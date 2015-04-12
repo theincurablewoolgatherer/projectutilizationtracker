@@ -4,25 +4,30 @@ block navigationpage_content
   .row.top-banner
       h1 Calendar
 
-  .row.manhour-container          
+  .row.manhour-toolbar(ng-controller="CalendarToolbarCtrl")
+    .col-lg-6
+      img.clickable.arrow(ng-click = "prevMonth()",src = "/images/back2.png")
+      span.inline.toolbar-text.month_name 
+        b {{cal_month_title}}
+      img.clickable.arrow(ng-click = "nextMonth()",src = "/images/next2.png")
+    .col-lg-2
+        div.pull-right(class="parent")
+            span(class="dropdown")
+                span.toolbar-text.clickable(class="dropdown-toggle") 
+                  b Leaves: 
+                  | {{leave_view_current_mode.label}}
+                  span.caret
+                ul(class='dropdown-menu')
+                  li(ng-repeat='choice in leave_view_modes')
+                    a(href='', ng-click = "setShowAllLeaves(choice.showAll)") {{choice.label}}
+
+
+  .row.manhour-container         
+    
     .row.manhour
         .col-lg-8.no-padding(ng-controller="CalendarCtrl")
 
-            .row.no-padding
-                .pull-left
-                    img.clickable.arrow(ng-click = "prevMonth()",src = "/images/back2.png")
-                    h3.inline.month_name {{cal_month_title}}
-                    img.clickable.arrow(ng-click = "nextMonth()",src = "/images/next2.png")
-                    
-                .pull-right
-                     
-                    ul.nav.nav-pills
-
-                      li(class="{{showAllLeaves? 'active':''}}")
-                          a(ng-click = "setShowAllLeaves(true)") All Leaves
-                        |   
-                      li(class="{{!showAllLeaves? 'active':''}}")
-                          a(ng-click = "setShowAllLeaves(false)") Projectmates
+            
                        
             .panel
                 .panel-body
@@ -54,7 +59,6 @@ block navigationpage_content
 
         .col-lg-3.no-padding(ng-controller="ManHourCtrl")  
             .row.no-padding
-                h3 Utilization
                 .panel
                     .panel-heading.clearfix
                         h3.admin-panel-heading.panel-title.pull-left In/Out Info

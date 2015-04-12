@@ -188,7 +188,7 @@ manhours.controller('ReportCtrl', function($scope, $rootScope, $http, projects, 
   $scope.updateReport = function(){
 
     var url = ROUTE.REPORT_PROJECTDATERANGE + $scope.project._id + '/from/' + $scope.startDate.getTime() + '/to/' + $scope.endDate.getTime();
-    console.log(url);
+    //console.log(url);
     $http.get(url).then(
       function(manhours) {
         $scope.result = manhours.data;
@@ -343,6 +343,8 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
   }
 });
 
+
+
 /**********************************************************************
  * Calendar controller
  **********************************************************************/
@@ -353,7 +355,7 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
     $scope.contextMenuOptions = CALENDAR.CONTEXT_MENU_ITEMS;
     $scope.cal_current_date;
     $scope.cal_month_day_weeks = [];
-    $scope.cal_month_title;
+    $rootScope.cal_month_title = "";
     $scope.month_leaves = [];
     $scope.month_leaves_all = [];
     $scope.month_manhours = [];
@@ -367,9 +369,21 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
         drawCalendarDetails($scope.cal_current_date);
     });
 
+    // Receive broadcast to select date
+    $rootScope.$on("calendarNextPrev", function(event, date) {
+      $scope.selectDate(date);
+    });
+
     // Receive broadcast to force select date
     $rootScope.$on("forceSelectDate", function(event) {
         $scope.selectDate($scope.selecteddate);
+    });
+
+
+    // User changed the leave filter form toolbar
+    $rootScope.$on("leaveFilterChanged", function(event, doShowAll) {
+      $scope.showAllLeaves = doShowAll;
+      toast.leaveToggled(doShowAll);
     });
 
     $scope.drawCalendar = function(){
@@ -378,7 +392,7 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
        var week_count = Math.ceil( lastOfMonth.getDate() / 7);
        var day_count = lastOfMonth.getDate();
        var firstDayOffset = firstOfMonth.getDay();
-       $scope.cal_month_title = $scope.cal_months_labels[$scope.cal_current_date.getMonth()] + " " + $scope.cal_current_date.getFullYear();
+       $rootScope.cal_month_title = $scope.cal_months_labels[$scope.cal_current_date.getMonth()] + " " + $scope.cal_current_date.getFullYear();
        $scope.cal_month_day_weeks = [];
        for(w = 1; w <= week_count; w++){
          var week_days = [];
@@ -413,27 +427,7 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
        }
     }
        
-    $scope.nextMonth = function(){
-      var newDate = new Date($scope.cal_current_date);
-      var month = newDate.getMonth() + 1;
-      var nextMonthDayCount = new Date(newDate.getFullYear(),  month+1, 0).getDate();
-      if(nextMonthDayCount < newDate.getDate()){
-        newDate.setDate(nextMonthDayCount);
-      }
-      newDate.setMonth(month);
-      $scope.selectDate(newDate);
-    };
 
-    $scope.prevMonth = function(){
-      var newDate = new Date($scope.cal_current_date);    
-      var month = newDate.getMonth() - 1;
-      var nextMonthDayCount = new Date(newDate.getFullYear(),  month+1, 0).getDate();
-      if(nextMonthDayCount < newDate.getDate()){
-        newDate.setDate(nextMonthDayCount);
-      }
-      newDate.setMonth(month);
-      $scope.selectDate(newDate);
-    };
     $scope.selectDate = function(date){
       // Do not allow saving of record if TimeZone Changed in client
       if(validation.isTimeZoneChanged($rootScope.clientTimeZoneOffset)){
@@ -446,6 +440,7 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
         redrawCalendarDates = true;
       }
       $scope.cal_current_date = date;
+      $rootScope.cal_current_date = date;
       $scope.cal_current_date.setHours(0,0,0,0);
       
       // We're changing month, so we need to redraw the calendar
@@ -594,17 +589,11 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
               });
       });
     }
-    
-    $scope.setShowAllLeaves = function(val){
-      $scope.showAllLeaves = val;
-      toast.leaveToggled(val);
-    };
 
     $scope.applyLeave = function(date, type, mode){
       var leaveDate = dateHelper.getUTCTime(date);
       var leave = {date: leaveDate, type: type};
       var leave_url = ROUTE.LEAVE_SAVE;
-
       // Do not allow saving of record if TimeZone Changed in client
       if(validation.isTimeZoneChanged($rootScope.clientTimeZoneOffset)){
         return;
@@ -620,8 +609,7 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
           $rootScope.$broadcast("redrawCalendar");
         })
         .error(function(error) {
-          toast.error(error.error);
-          console.log(JSON.stringify(error.error));
+          toast.error(error);
       });
 
     }
@@ -646,6 +634,56 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
     // init
     $scope.selectDate(new Date());
 });
+
+/**********************************************************************
+ * Calendar Toolbar controller
+ **********************************************************************/
+ manhours.controller('CalendarToolbarCtrl', function($scope, $rootScope){
+
+   
+    $scope.leave_view_modes = [
+      {label:"Show All", showAll:true},
+      {label:"My Project/s",showAll:false}
+    ];
+    $scope.leave_view_current_mode = $scope.leave_view_modes[1];
+
+    $scope.setShowAllLeaves = function(val){
+      $rootScope.$broadcast("leaveFilterChanged", val);
+      $scope.leave_view_current_mode = val ?  $scope.leave_view_modes[0] : $scope.leave_view_modes[1];
+    };
+
+
+
+    // User changed the Date
+    $rootScope.$on("selectedDateChanged", function(event, args) {
+      $scope.cal_month_title = $rootScope.cal_month_title;
+    });
+
+    $scope.nextMonth = function(){
+      var newDate = new Date($rootScope.cal_current_date);
+      var month = newDate.getMonth() + 1;
+      var nextMonthDayCount = new Date(newDate.getFullYear(),  month+1, 0).getDate();
+      if(nextMonthDayCount < newDate.getDate()){
+        newDate.setDate(nextMonthDayCount);
+      }
+      newDate.setMonth(month);
+
+      $rootScope.$broadcast("calendarNextPrev", newDate);
+      $scope.cal_month_title = $rootScope.cal_month_title;
+    };
+
+    $scope.prevMonth = function(){
+      var newDate = new Date($rootScope.cal_current_date);    
+      var month = newDate.getMonth() - 1;
+      var nextMonthDayCount = new Date(newDate.getFullYear(),  month+1, 0).getDate();
+      if(nextMonthDayCount < newDate.getDate()){
+        newDate.setDate(nextMonthDayCount);
+      }
+      newDate.setMonth(month);
+      $rootScope.$broadcast("calendarNextPrev", newDate);
+      $scope.cal_month_title = $rootScope.cal_month_title;
+    };
+ });
 
 /**********************************************************************
  * Leaves modal controller
@@ -934,7 +972,7 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
     if($scope.manhour._id){
       saveMode = MODELMODE.UPDATE;
     }
-    console.log(saveMode);
+    //console.log(saveMode);
     //console.log($scope.manhour);
 
     // Convert dates to UTC date before saving
@@ -942,7 +980,7 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
     $scope.manhour.timein = dateHelper.getUTCTime($scope.manhour.timein);
     $scope.manhour.timeout = dateHelper.getUTCTime($scope.manhour.timeout);
     
-    console.log($scope.manhour);
+    //console.log($scope.manhour);
     // return;
     if(saveMode == MODELMODE.CREATE){
       $http.post(ROUTE.MANHOUR_SAVE, $scope.manhour)

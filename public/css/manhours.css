@@ -11,6 +11,24 @@ body{
 	font-family: 'Roboto';
 	overflow-x: hidden;
 }
+@font-face {
+  font-family: 'proximanova';
+  src: url('../fonts/proxima_nova_thin_1.eot');
+  src: url('../fonts/proxima_nova_thin_1.eot?#iefix') format('embedded-opentype'), url('../fonts/proxima_nova_thin_1.woff') format('woff'), url('../fonts/proxima_nova_thin_1.ttf') format('truetype');
+
+}
+.toolbar-text{
+	margin-top:5px;
+  color: #6C6C6C;
+  font-family: 'proximanova';
+  text-transform: uppercase;
+  font-size: 15px;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: normal;
+  height: 44px;
+  letter-spacing: 1.10000002384186px;
+}
 .full-width{
  width: 100% !important;
 }
@@ -18,18 +36,23 @@ body{
 	display:inline-block;
 }
 .month_name{
-	margin-left: 20px;
-	margin-right: 20px;
+  margin-left: 20px;
+  margin-right: 20px;
+  width: 150px;
+  text-align: center;
 }
 .clickable{
 	cursor: pointer;
 	display: inline-block;
 
 }
+.clickable:active{
+opacity:.7;
+}
 .arrow{
   width: 15px;
   opacity: .45;
-  margin-top: -8px;
+ 
 }
 .download-link a{
 	cursor: pointer;
@@ -105,9 +128,23 @@ button.next{
 	font-size: 13px;
 	padding: 1.1px 8px 1.1px 8px !important;
 }
+.manhour-toolbar{
+  margin-left: -20px !important;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-bottom: 8px;
+  padding-top: 8px;
+  height: 45px;
+  background: rgba(137, 137, 137, 0.03);
+}
 .month-name{
-	margin-top: 0px;
-	opacity: .6;
+  margin-left: 20px;
+  margin-right: 20px;
+  font-family: 'proxima-nova','Helvetica Neue',Helvetica,Arial,sans-serif;
+  font-weight: 100;
+  text-transform: uppercase;
+  font-size: 14px;
+  /* padding: 0px; */
 }
 .month{
 	table-layout: fixed;
