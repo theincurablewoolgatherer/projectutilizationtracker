@@ -34,9 +34,12 @@ block navigationpage_content
                                        i.glyphicon.glyphicon-calendar
           .row
             .download-link.pull-right(ng-show = "result.dailyReport.length > 0")
+                  a.space-right(ng-click="downloadCsv()")
+                    i.glyphicon.glyphicon-download-alt.space-right
+                    | CSV
                   a(ng-click="printReport()")
                     i.glyphicon.glyphicon-print.space-right
-                    | Print View
+                    | Print View  
         .col-lg-10.report
             h3 {{project.name}}   
             .row

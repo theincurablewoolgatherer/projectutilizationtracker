@@ -116,7 +116,7 @@ app.getProjectManhours = function(project_id, start_date, end_date, callback){
         var manhour_date = Date.UTC(manhour.date.getFullYear(), manhour.date.getMonth(), manhour.date.getDate());
         for(var j = 0; j < manhour.tasks.length; j++){
           var task = manhour.tasks[j];
-          if(utilization[manhour_date][manhour.user].hasOwnProperty(task.task)){
+          if(utilization[manhour_date][manhour.user] && utilization[manhour_date][manhour.user].hasOwnProperty(task.task)){
             utilization[manhour_date][manhour.user][task.task] = task.duration || 0;
           }
         }

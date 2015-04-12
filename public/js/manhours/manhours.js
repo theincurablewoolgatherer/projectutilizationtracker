@@ -199,6 +199,10 @@ manhours.controller('ReportCtrl', function($scope, $rootScope, $http, projects, 
      //console.log("REPORT");
      //console.log(url);
   }
+  $scope.downloadCsv = function(){
+    var url = ROUTE.REPORT_CSV + $scope.project._id + '/from/' + $scope.startDate.getTime() + '/to/' + $scope.endDate.getTime();
+    window.location = url;
+  }
 
   $scope.printReport = function(){
     var url = ROUTE.REPORT_PRINT + $scope.project.name + '/'+ $scope.project._id + '/from/' + $scope.startDate.getTime() + '/to/' + $scope.endDate.getTime();

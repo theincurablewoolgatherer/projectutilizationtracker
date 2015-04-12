@@ -45,6 +45,7 @@
         "HOLIDAY_DELETE": "/api/holiday/delete",
         "REPORT_PROJECTDATERANGE": "/api/report/of/",
         "REPORT_PRINT": "/reports/print/",
+        "REPORT_CSV": "/reports/csv/",
         "USER_PROJECT_MATES":"/api/user/mates/"
  	}
  );

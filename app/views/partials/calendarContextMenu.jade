@@ -8,6 +8,7 @@ ul.dropdown-menu.calendar-context-menu(role='menu')
       a(ng-click="applyLeave(cell.date, contextMenuOptions[1], {{ leave.type == contextMenuOptions[1] ? '0': '1'}})") 
         {{contextMenuOptions[1]}}
         span.glyphicon.glyphicon-ok.pull-right(style= "display: {{leave.type == contextMenuOptions[1] ? 'inline-block' : 'none'}}")
+        
     li(style= "display: {{ showContextMenu ? 'block' : 'none'}}")
       a(ng-click="showLeaves(cell.date, cell.leave_all)") View Leaves
     li(style= "display: {{ !showContextMenu ? 'block' : 'none'}}")
