@@ -15,6 +15,9 @@ body {
   color: #fff;
   border-radius: 0;
 }
+.alert{
+  border-radius: 0;
+}
 .nav-pills{
   margin-top: 15px;
 }

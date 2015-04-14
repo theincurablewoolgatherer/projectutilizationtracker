@@ -9,11 +9,13 @@ div(ng-hide = "!day_leaves ||day_leaves.length == 0")
         th 
         th Name
         th Time-Off Type
+        th Remarks
         th File Date
       tr(ng-repeat="leave in day_leaves track by $index")
         td {{ $index + 1 }}
         td {{leave.user.username }}
         td {{leave.type }}
+        td {{leave.remarks }}
         td {{leave.filedate | date:'medium' }}
 .modal-body(ng-show = "!day_leaves || day_leaves.length == 0")
   p No leaves for this day

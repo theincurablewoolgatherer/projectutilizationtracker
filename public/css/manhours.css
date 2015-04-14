@@ -175,8 +175,8 @@ height: 100%;
 }
 
 .month-day-selected{
-	background: #f7f7f7;
-	border-right: 0px solid #e0e0e0;
+	background: #D9EDF7;
+	border-right: 0px solid #326A9B;
 	min-height: 150px;
 	padding:7px;
 height: 100%;
@@ -215,14 +215,15 @@ height: 100%;
 }
 .month-day-leave{
 	text-align: center;
-	font-size: 1.2em;
 	margin: auto auto;
 	letter-spacing: -.05em;
 	cursor: default;
 	display:inline-block;
 	min-height:15px;
 	width: 100%;
-	font-size: 13px;
+	opacity: .8;
+	font-size: 12px;
+	text-transform: uppercase;
 }
 .month-day-leaves{
 	

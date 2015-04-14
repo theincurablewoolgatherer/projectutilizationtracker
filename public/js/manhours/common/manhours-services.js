@@ -208,7 +208,8 @@ manhours.service('toast', function(ngToast){
     this.leaveToggled = function(showAll){
       var msgString = showAll ? "Showing all leaves" : "Showing leaves in current project/s";
       var msg = ngToast.create({
-        content: msgString
+        content: msgString,
+         class: 'info'
       });
     }
 

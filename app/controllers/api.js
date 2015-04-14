@@ -348,6 +348,7 @@ leaveCreate = function(req, res) {
       date: new Date(req.body.date),
       user: req.user,
       type: req.body.type,
+      remarks: req.body.remarks,
       filedate: new Date()
     });
 

@@ -394,7 +394,7 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
     $scope.drawCalendar = function(){
        var firstOfMonth = dateHelper.getFirstDateOfMonth($scope.cal_current_date);
        var lastOfMonth = dateHelper.getLastDateOfMonth($scope.cal_current_date);
-       var week_count = Math.ceil( lastOfMonth.getDate() / 7);
+       var week_count = Math.ceil( (lastOfMonth.getDate() + firstOfMonth.getDay()) / 7);
        var day_count = lastOfMonth.getDate();
        var firstDayOffset = firstOfMonth.getDay();
        $rootScope.cal_month_title = $scope.cal_months_labels[$scope.cal_current_date.getMonth()] + " " + $scope.cal_current_date.getFullYear();
@@ -408,12 +408,14 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
             date.setTime($scope.cal_current_date.getTime());
             date.setDate(index);
             date.setHours(0,0,0,0);
+            var shouldDrawDetails = true;
             var celltype = CALENDARCELL.DEFAULT;
             if($scope.cal_current_date.getTime() == date.getTime()){
               celltype = CALENDARCELL.SELECTED;
             }else{
               if($scope.cal_current_date.getMonth() != date.getMonth()){
                 celltype = CALENDARCELL.OTHERDAY;
+                var shouldDrawDetails = false;
               }
             }
             if(index >= 1 && index <= day_count){
@@ -426,7 +428,7 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
               holidayWeekendText = null;
               showContextMenu = true;
             }
-            week_days.push({index: index, date: date, celltype: celltype, contextMenuOptions: $scope.contextMenuOptions, leaveTypes: $scope.leaveTypes, showContextMenu: showContextMenu, holidayWeekendText: holidayWeekendText});
+            week_days.push({index: index, date: date, celltype: celltype, shouldDrawDetails: shouldDrawDetails, contextMenuOptions: $scope.contextMenuOptions, leaveTypes: $scope.leaveTypes, showContextMenu: showContextMenu, holidayWeekendText: holidayWeekendText});
          }
          $scope.cal_month_day_weeks.push(week_days);
        }
@@ -456,6 +458,8 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
         // Redraw Calendar Details
         drawCalendarDetails(date);
       }    
+
+      var selected_cell;
       for(var w = 0; w < $scope.cal_month_day_weeks.length; w++){
         for(var d = 0; d < $scope.cal_month_day_weeks[w].length; d++){
           for(var m = 0; m < $scope.month_manhours.length; m++){
@@ -463,30 +467,39 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
            if($scope.month_manhours[m].date.constructor === String){
              manhourUTCDate = dateHelper.getLocalFromUTCTime(dateHelper.getDateFromString($scope.month_manhours[m].date));
            }
+
             if(dateHelper.isSameDay($scope.cal_current_date, manhourUTCDate)){
-                
                // Set Current Manhour
                $scope.manhour =  $scope.month_manhours[m];
              }
           }
+          $scope.cal_month_day_weeks[w][d].shouldDrawDetails = true;
           var celltype = CALENDARCELL.DEFAULT;
           if($scope.cal_current_date.getTime() == $scope.cal_month_day_weeks[w][d].date.getTime()){
              celltype = CALENDARCELL.SELECTED;
+             selected_cell =  $scope.cal_month_day_weeks[w][d];
           }else{
              if($scope.cal_current_date.getMonth() !=  $scope.cal_month_day_weeks[w][d].date.getMonth()){
                 celltype = CALENDARCELL.OTHERDAY;
+                $scope.cal_month_day_weeks[w][d].shouldDrawDetails = false;
              }
           }
           $scope.cal_month_day_weeks[w][d].celltype = celltype;
         }
       }
-      $rootScope.$broadcast("selectedDateChanged", {selectedDate: $scope.cal_current_date, manhour: $scope.manhour});
+      $rootScope.$broadcast("selectedDateChanged", {selectedDate: $scope.cal_current_date, manhour: $scope.manhour, on_leave: selected_cell.leave});
     }
 
     var drawCalendarDetails = function(date){
        // 1. Draw Holidays in Calendar Cells
        var firstOfMonth = dateHelper.getUTCTime(dateHelper.getFirstDateOfMonth(date));
        var lastOfMonth = dateHelper.getUTCTime(dateHelper.getLastDateOfMonth(date));
+
+       var firstShownDate = new Date(firstOfMonth);
+       firstShownDate.setDate(firstOfMonth.getDate() - firstOfMonth.getDay());
+       var lastShownDate = new Date(lastOfMonth);
+       lastShownDate.setDate((lastOfMonth.getDate() + (6 - firstOfMonth.getDay()))-1);
+
        holidays.getHolidaysInDateRange(firstOfMonth, lastOfMonth).success(
         function(result){
          // console.log(result);
@@ -582,7 +595,7 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
                 });
 
                // 3.2 Retrieve manhours for the month and draw indicator on cells if user already inputted
-               var manhour_url = ROUTE.MANHOUR_USER + result.data.username + "/from/" + firstOfMonth.getTime()+"/to/"+lastOfMonth.getTime()+"?"+new Date();
+               var manhour_url = ROUTE.MANHOUR_USER + result.data.username + "/from/" + firstShownDate.getTime()+"/to/"+lastShownDate.getTime()+"?"+new Date();
                $http.get(manhour_url).then(
                   function(manhours){
                     $scope.month_manhours = manhours.data;
@@ -595,6 +608,12 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
                            
                           if(dateHelper.isSameDay(mhDay, cellDay)){
                              $scope.cal_month_day_weeks[w][d].manhour = manhours.data[m];
+
+                             $scope.cal_month_day_weeks[w][d].utilization = 0;
+                             // Get total utilization
+                             for(var t = 0; t < manhours.data[m].tasks.length; t++){
+                                $scope.cal_month_day_weeks[w][d].utilization += manhours.data[m].tasks[t].duration || 0;
+                             }
                            }
                         }
                       }
@@ -610,24 +629,52 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
       var leaveDate = dateHelper.getUTCTime(date);
       var leave = {date: leaveDate, type: leave_type};
       var leave_url = ROUTE.LEAVE_SAVE;
+
       // Do not allow saving of record if TimeZone Changed in client
       if(validation.isTimeZoneChanged($rootScope.clientTimeZoneOffset)){
         return;
       };
 
+      var submit_leave = function(leave){
+        $http.post(leave_url, leave)
+          .success(function() {
+            toast.saved();
+             console.log(JSON.stringify(leave));
+            $rootScope.$broadcast("redrawCalendar");
+          })
+          .error(function(error) {
+            toast.error(error);
+        });
+      }
+
       if(mode === 0){
         leave_url = ROUTE.LEAVE_DELETE;
+        submit_leave(leave);
+      }else{
+        // Get leave remarks
+        var modalInstance = $modal.open({
+          templateUrl: 'partials/userInputModal',
+          controller: 'UserInputModalCtrl',
+          size: 'sm',
+          resolve: {
+            model: function() {
+              return leave;
+            },
+            model_field: function() {
+              return "remarks";
+            },
+            title: function(){
+              return "Leave Remarks";
+            },
+            input_label: function(){
+              return "Remarks";
+            },
+            on_submit: function(){
+              return submit_leave;
+          }
+        }
+        });
       }
-      $http.post(leave_url, leave)
-        .success(function() {
-          toast.saved();
-          // console.log(JSON.stringify(leave));
-          $rootScope.$broadcast("redrawCalendar");
-        })
-        .error(function(error) {
-          toast.error(error);
-      });
-
     }
 
     $scope.showLeaves = function(date, day_leaves) {
@@ -650,6 +697,25 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
     // init
     $scope.selectDate(new Date());
 });
+
+/**********************************************************************
+ * Generic User Input Modal controller
+ **********************************************************************/
+ manhours.controller('UserInputModalCtrl', function($scope, $rootScope, $modalInstance, title, input_label, model, model_field, on_submit){
+  $scope.title = title;
+  $scope.input_val;
+  $scope.input_label = input_label;
+
+  $scope.cancel = function () {
+    $modalInstance.dismiss('cancel');
+  };
+
+  $scope.ok = function() {
+    model[model_field] = $scope.input_val;
+    on_submit(model);
+    $modalInstance.dismiss('submit');
+  }
+ });
 
 /**********************************************************************
  * Calendar Toolbar controller
@@ -715,7 +781,7 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
 /**********************************************************************
  * Project Utilization controller
  **********************************************************************/
- manhours.controller('ManHourCtrl', function($scope, $rootScope, $filter, $modal, $http, inout, ROUTE, MESSAGE, MODELMODE, validation, projects, holidays, manhour, toast, dateHelper) {
+ manhours.controller('ManHourCtrl', function($scope, $rootScope, $filter, $modal, $http, inout, ROUTE, MESSAGE, MODELMODE, LEAVE, validation, projects, holidays, manhour, toast, dateHelper) {
   $scope.saveEnabled = true;
 
   // Inout Time - Dropdown Values
@@ -769,7 +835,15 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
   // User changed the Date
   $rootScope.$on("selectedDateChanged", function(event, args) {
     $scope.selecteddate = args.selectedDate;
+    // TO-DO
+    // $scope.on_whole_day_leave  = args.on_leave ? 
+    // (args.on_leave.type == LEAVE.types[0].type ||
+    // args.on_leave.type == LEAVE.types[2].type ||
+    // args.on_leave.type == LEAVE.types[4].type) : false;
+    $scope.on_whole_day_leave = false;
+    //console.log($scope.on_whole_day_leave);
     drawManHours(args);
+
   });
 
 
@@ -797,6 +871,7 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
       if(args.manhour.date.constructor === String){
           manhourUtcDate = dateHelper.getLocalFromUTCTime(dateHelper.getDateFromString(args.manhour.date));
       }
+
       if(dateHelper.isSameDay($scope.selecteddate, manhourUtcDate)){
         // Manhour already exists
         $scope.manhour = manhour.buildManhour(args.manhour);

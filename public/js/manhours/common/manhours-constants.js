@@ -78,7 +78,7 @@
   "CALENDAR", {
     "DAYS" : ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
     "MONTHS" : ['January', 'February', 'March', 'April','May', 'June', 'July', 'August', 'September','October', 'November', 'December'],
-    "CONTEXT_MENU_ITEMS": ['VL - Whole Day', 'VL - Half Day', 'SL - Whole Day', 'SL - Half Day', 'View Leaves']
+    "CONTEXT_MENU_ITEMS": ['VL - Whole Day', 'VL - Half Day', 'SL - Whole Day', 'SL - Half Day', 'CTO', 'View Leaves']
   });
 
   // Leave types
@@ -88,5 +88,6 @@
     {label: "Vacation: Whole Day", type: "Whole Day VL"}, 
     {label:"Vacation: Half Day", type: "Half Day VL"}, 
     {label:"Sick: Whole Day", type: "Whole Day SL"}, 
-    {label:"Sick: Half Day", type: "Half Day SL"}]
+    {label:"Sick: Half Day", type: "Half Day SL"},
+    {label:"CTO", type: "CTO"}]
   });
