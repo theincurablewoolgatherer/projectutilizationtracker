@@ -15,6 +15,10 @@ showReportsView = function(req, res){
 	res.render('reports', { title: 'ASL Utilization Tracker', isManager: req.user.usertype == constants.USERTYPE_PROJECT_MANAGER } );
 }
 
+getSummarizedCSV  = function(){
+
+}
+
 printReportsView = function(req, res){
 	app.getReportData(req, res, function(report) {
     report.projectname = req.params.projectname;
@@ -337,6 +341,8 @@ function isAdmin(req, res, next) {
 // II. Controller URL to Action mapping
 //========================================================
 app.get('/', isAdmin, showReportsView);
+//app.get('/csv/summary', getCsvSummary);
 app.get('/print/:projectname/:projectid/from/:start/to/:end', isAdmin, printReportsView);
 app.get('/csv/:projectid/from/:start/to/:end', getCsvReport);
+
 module.exports = app;

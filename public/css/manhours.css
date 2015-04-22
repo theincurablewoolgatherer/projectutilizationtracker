@@ -4,7 +4,7 @@
 *
 */
 body{
-	background:#E7EBEE;
+	background:#FFFFFF;
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-attachment: absolute;
@@ -17,6 +17,49 @@ body{
   src: url('../fonts/proxima_nova_thin_1.eot?#iefix') format('embedded-opentype'), url('../fonts/proxima_nova_thin_1.woff') format('woff'), url('../fonts/proxima_nova_thin_1.ttf') format('truetype');
 
 }
+.arrow-dropdown{
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  display: none;
+  width: 190px;
+  float: left;
+  min-width: 160px;
+  padding: 5px 0;
+  margin: 17px 0 0;
+  font-size: 14px;
+  text-align: left;
+  list-style: none;
+  background-color: #fff;
+  border: 2px solid #06628B;
+   border-top: 2px solid #06628B !important;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.arrow-dropdown:before {
+  position: absolute;
+  top: -12px;
+  right: 8px;
+  display: inline-block;
+  border-left: 12px solid transparent;
+  border-bottom: 12px solid #06628B;
+  border-right: 12px solid transparent;
+  border-bottom-color: #06628B;
+  content: '';
+}
+
+.arrow-dropdown:after {
+  position: absolute;
+  top: -9px;
+  right: 6px;
+  display: inline-block;
+  border-left: 14px solid transparent;
+  border-bottom: 14px solid #ffffff;
+  border-right: 14px solid transparent;
+  content: '';
+}
+
 .toolbar-text{
 	margin-top:5px;
   color: #6C6C6C;
@@ -26,7 +69,7 @@ body{
   font-style: normal;
   font-variant: normal;
   font-weight: normal;
-  height: 44px;
+  
   letter-spacing: 1.10000002384186px;
 }
 .full-width{
@@ -134,7 +177,7 @@ button.next{
   padding-right: 16px;
   padding-bottom: 8px;
   padding-top: 8px;
-  height: 45px;
+  height: 51px;
   background: rgba(137, 137, 137, 0.03);
 }
 .month-name{
@@ -157,36 +200,37 @@ button.next{
    
 
 }
-.month td{
-border: 1px solid #e1e1e1}
+.month td, .month th{
+	vertical-align: top;
+    border: 1px solid #FFF;
+    border-collapse: collapse;
+}
 .month-days th{
-	text-align: center;
-	border-bottom: 0px solid #e1e1e1;
+	  background: #F0F0F0;
+  text-align: left;
+  font-weight: normal;
+  padding: 6px 14px;
 }
 .month-day{
-	border-right: 0px solid #e1e1e1;
-	min-height: 150px;
-	padding:7px;
+	background: #F0F0F0;
+	height: 162px;
+	padding-top:7px;
+	padding-bottom:7px;
 	transition: background .25s ease-in-out;
    -moz-transition: background .25s ease-in-out;
    -webkit-transition: background .25s ease-in-out;
-height: 100%;
-
 }
 
 .month-day-selected{
-	background: #D9EDF7;
-	border-right: 0px solid #326A9B;
-	min-height: 150px;
+	background: #FFFFFF;
+	height: 162px;
 	padding:7px;
-height: 100%;
 }
 
 .month-day-other{
-	border-right: 0px solid #e1e1e1;
-	min-height: 150px;
+	background: #E2E2E2;
+	height: 162px;
 	padding:7px;
-height: 100%;
 }
 
 .month-day-other .month-day-num{
@@ -214,16 +258,35 @@ height: 100%;
 	cursor: default;
 }
 .month-day-leave{
-	text-align: center;
-	margin: auto auto;
-	letter-spacing: -.05em;
-	cursor: default;
-	display:inline-block;
-	min-height:15px;
-	width: 100%;
-	opacity: .8;
+	  /* text-align: center; */
+
+  /* opacity: .8; */
+
+}
+.month-day-leave-vl{
+	background: #30AACE;
 	font-size: 12px;
-	text-transform: uppercase;
+    margin: auto auto;
+  letter-spacing: -.05em;
+  cursor: default;
+  display: inline-block;
+  min-height: 15px;
+  width: 100%;
+  color: #ffffff;
+  padding: 8px;
+}
+
+.month-day-leave-sl{
+	background:#D3736B;
+	font-size: 12px;
+    margin: auto auto;
+  letter-spacing: -.05em;
+  cursor: default;
+  display: inline-block;
+  min-height: 15px;
+  width: 100%;
+  color: #ffffff;
+  padding: 8px;
 }
 .month-day-leaves{
 	
@@ -231,9 +294,15 @@ height: 100%;
 	right: 10px;
 	cursor: pointer;
 
+
 }
 .month-day-leaves a:hover{
 	text-decoration: none;
+}
+.manhour-utilization{
+	background:#F3F3F3;
+	margin-bottom: -99999px;
+	padding-bottom: 99999px;
 }
 .mh_task {
 	vertical-align: middle !important;
@@ -310,31 +379,34 @@ ul.calendar-context-menu {
 }
 
 .top-banner{
-  height: 100px;
+  height: 50px;
   margin-left: -20px !important;
-  background: #DDE1E4;
+  background: #0570BD;
 }
 
 /* Calendar Page */
 .no-padding{
-   margin-right: 1px;
+   margin-right: 0px;
    padding-left: 0px !important; 
+   padding-right: 0px !important; 
 }
 
 .top-banner h1{
-  display: block;
+   display: block;
   position: relative;
-  top: 30px;
-  font-size: 4em;
+    top: -4px;
+  font-size: 2em;
   left: 15px;
   font-family: 'Roboto';
-  font-weight: 300;
-  color: rgba(24, 24, 24, 0.21);
-  opacity: .6;
+  font-weight: 100;
+  color: rgba(255, 255, 255, 1);
+  opacity: .7;
 }
 
 .manhour-container {
-	margin-top: 20px;
+	margin-left: -20px !important;
+	min-height: 100%;
+	overflow: hidden;
 }
 
 .no-background{

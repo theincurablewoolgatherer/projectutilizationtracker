@@ -20,13 +20,12 @@ background-color: rgba(248, 248, 248, 0.04) !important;
 color: #ffffff !important;  
 padding-left: 20px !important;
 float: left;
-  height: 100px !important;
  
 }
 .brand-text{
   position: relative;
 left: 20px;
-top: 50px;
+top: 2px;
 }
 .brand-text .glyphicon{
   margin-right: 14px;
@@ -36,14 +35,14 @@ top: 50px;
   font-size:15px;
   font-family: 'Roboto';
   font-weight: 300;
-  color: rgba(255, 255, 255, 0.65);
+  color:rgba(115, 115, 115, 1);
     transition: all .12s ease-in-out;
    -moz-transition: all .12s ease-in-out;
    -webkit-transition: all .12s ease-in-out;
 }
 .navbar-default .navbar-nav > li > a:hover {
-color: #ffffff;
-
+color: rgba(0, 152, 179, 1);
+background:#F0F0F0;
 }
 .list-header {
 color: #848c95;
@@ -81,7 +80,7 @@ margin-right: 15px !important;
   position: fixed;
   width: 210px;
   height: 100%;
-  background-color: #2C2C2C;
+  background-color: #FBFBFB;
  
 }
 .side-menu .navbar {
@@ -89,25 +88,29 @@ margin-right: 15px !important;
 }
 .side-menu .navbar-header {
   width: 100%;
+  background: #0570BD;
+  border-right: 1px solid rgba(255, 255, 255, 0.23);
 }
 .side-menu .navbar-nav .active a {
+  
   background-color: transparent;
   margin-right: -1px;
   border-right: 0px solid #93C54B;
 }
 .side-menu .navbar-nav li {
-  padding-left: 25px;
+ 
   display: block;
   width: 100%;
-  background: rgba(255, 255, 255, 0.0);;
-  border-bottom: 1px solid rgba(255,255,255,.05);
+  background: rgba(255, 255, 255, 0.0);
+  border-bottom: 1px solid rgba(255,255,255,.15);
 }
 .navbar-inverse .navbar-nav > .active > a:hover
 {
   border-right: 0px;
+
 }
 .side-menu .navbar-nav li a {
-  padding: 30px;
+  padding: 15px 15px 13px 40px;
 }
 .side-menu .navbar-nav li a .glyphicon {
   padding-right: 10px;
@@ -399,7 +402,8 @@ margin-right: 15px !important;
     /* this is probably redundant */
     position: fixed;
     z-index: 3;
-    background-color: rgba(255, 255, 255, 0.07);;
+    background-color: rgba(255, 255, 255, 0.07);
+    border-right: 1px solid rgba(255, 255, 255, 0.23);
   }
   /* Dropdown tweek */
   #dropdown .panel-body .navbar-nav {

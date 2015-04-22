@@ -682,7 +682,7 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
         templateUrl: 'partials/userLeavesModal',
         controller: 'LeavesModalCtrl',
         windowClass: 'leaves-modal',
-        size: 'sm',
+        size: 'md',
         resolve: {
           date: function() {
             return date;
