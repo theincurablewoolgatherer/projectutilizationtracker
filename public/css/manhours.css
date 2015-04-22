@@ -32,8 +32,8 @@ body{
   text-align: left;
   list-style: none;
   background-color: #fff;
-  border: 2px solid #06628B;
-   border-top: 2px solid #06628B !important;
+  border: 2px solid rgba(153, 151, 151, 0.28);
+   border-top: 2px solid rgba(153, 151, 151, 0.28) !important;
   -webkit-box-shadow: none;
   box-shadow: none;
 }
@@ -43,9 +43,9 @@ body{
   right: 8px;
   display: inline-block;
   border-left: 12px solid transparent;
-  border-bottom: 12px solid #06628B;
+  border-bottom: 12px solid rgba(153, 151, 151, 0.28);
   border-right: 12px solid transparent;
-  border-bottom-color: #06628B;
+  border-bottom-color: rgba(153, 151, 151, 0.28);
   content: '';
 }
 
@@ -222,9 +222,10 @@ button.next{
 }
 
 .month-day-selected{
-	background: #FFFFFF;
+	background: #CCCCCC;
 	height: 162px;
-	padding:7px;
+	padding-top:7px;
+  padding-bottom:7px;
 }
 
 .month-day-other{
@@ -256,6 +257,7 @@ button.next{
 	font-size: 1.2em;
 	opacity: .95;
 	cursor: default;
+  margin-left: 10px;
 }
 .month-day-leave{
 	  /* text-align: center; */
@@ -403,10 +405,25 @@ ul.calendar-context-menu {
   opacity: .7;
 }
 
-.manhour-container {
+#manhour-container {
 	margin-left: -20px !important;
 	min-height: 100%;
 	overflow: hidden;
+  opacity:0;
+  transition: all .25s ease-in-out;
+   -moz-transition: all .25s ease-in-out;
+   -webkit-transition: all .25s ease-in-out;
+}
+
+#preloader{
+  position:relative;
+  margin-top:15%;
+  left: 40%;
+
+  display:block;
+  width:128px;
+  height:128px;
+  background:url('/images/preloader3.gif');
 }
 
 .no-background{

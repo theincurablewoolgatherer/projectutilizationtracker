@@ -618,6 +618,14 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
                         }
                       }
                     }
+                    
+                    // Loading Animation 
+                    setTimeout( function(){
+                      document.getElementById("preloader").style.display = "none";
+                      document.getElementById("manhour-container").style.opacity = 1;
+                    }, 1500 );
+
+                    
               });
       });
     }

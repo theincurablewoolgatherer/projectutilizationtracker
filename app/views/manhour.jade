@@ -6,8 +6,8 @@ block navigationpage_content
 
   
 
-
-  .row.manhour-container         
+  #preloader
+  .row#manhour-container         
 
     .col-lg-9.no-padding.manhour
         .row.manhour-toolbar(ng-controller="CalendarToolbarCtrl")
@@ -107,9 +107,7 @@ block navigationpage_content
                                   td
                                     input.form-control.mh_duration(ng-model = "manhour.tasks[$index].duration", ng-disabled="on_whole_day_leave", ng-change = "updateTotalUtilization()", type = "number", step = ".01", placeholder="0", min = "0")
 
-                        .pull-right
-                          button.btn.btn-primary.space-right(ng-click='deleteManhour()', ng-show= 'manhour._id') Delete
-                          button.btn.btn-primary(ng-click='saveManhour()', ng-disabled = "!saveEnabled || on_whole_day_leave") Save
+                       
 
           .row
              
@@ -132,6 +130,10 @@ block navigationpage_content
                                   td 
                                      label.control-label() {{ manhour.isOvertime == 1 ? 'Overtime' : 'OTY'}}
                                   td {{overtimeHours | number: 2}} hr                                    
-                            
+          .row
+            .col-lg-6
+              button.btn.btn-primary.space-right(ng-click='deleteManhour()', ng-show= 'manhour._id') Delete
+            .col-lg-6
+              button.btn.btn-primary(ng-click='saveManhour()', ng-disabled = "!saveEnabled || on_whole_day_leave") Save                    
       
 
