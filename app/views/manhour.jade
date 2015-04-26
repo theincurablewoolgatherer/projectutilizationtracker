@@ -19,14 +19,16 @@ block navigationpage_content
             img.clickable.arrow(ng-click = "nextMonth()",src = "/images/next2.png")
           .col-lg-3
               div.pull-right(class="parent")
-                  span(class="dropdown")
-                      span.toolbar-text.clickable(class="dropdown-toggle") 
-                        b Leaves: 
-                        | {{leave_view_current_mode.label}}
-                        span.caret
+                  span(class="dropdown leave-toggler")
+                      span.toolbar-text.clickable.leave-toggle(class="dropdown-toggle") 
+                        
+                        span.filter 
+                          b Leaves: 
+                          {{leave_filter_current.label}}
+                          span.caret
                       ul(class='dropdown-menu arrow-dropdown')
-                        li(ng-repeat='choice in leave_view_modes')
-                          a(href='', ng-click = "setShowAllLeaves(choice.showAll)") {{choice.label}}
+                        li(ng-repeat='choice in leave_filters', class="fadein fadeout")
+                          a(href='', ng-click = "filterLeaveView(choice)") {{choice.label}}
                     
         .row.manhour-calendar(ng-controller="CalendarCtrl")
                   table.month(cellspacing='0', cellpadding='0', width = '100%')
@@ -39,22 +41,21 @@ block navigationpage_content
                               td(class="{{cell.celltype}}", ng-repeat="cell in week", ng-click="selectDate(cell.date)", ng-model = "cell", data-context-menu="partials/calendarContextMenu", data-context-event="contextmenu")
                                 
                                       .month-day-num.pull-left {{cell.date.getDate()}}
-                                      span.pull-right(ng-show = "cell.manhour && cell.shouldDrawDetails") 
+                                      span.pull-right.day-utilization(ng-show = "cell.manhour && cell.shouldDrawDetails") 
+                                         
                                           span.spaced-right {{cell.utilization}} {{(cell.utilization > 1)? 'hrs' : 'hr'}}  
-                                          img(src="/images/tick.png")
+                                          
 
-                                      span.month-day-holiday {{cell.holiday.name}}
+                                      span.month-day-holiday(ng-show = "cell.holiday") {{cell.holiday.name}}
+
                                       .month-day-details
-                                        
-                                        div(class="{{(cell.leave_label)? cell.leave_label.substring(0,4) === 'Sick' ? 'month-day-leave-sl' : 'month-day-leave-vl': ' '}} ") {{cell.leave_label}}
-                                        .month-day-leaves(ng-show = "cell.leave_all.length > 0 && showAllLeaves") 
-                                            a.pull-right(ng-click = "showLeaves(cell.date, cell.leave_all)", title = "{{cell.leave_all.length}} resource{{cell.leave_all.length == 1 ? ' is' : 's are'}} on leave") 
-                                                span.glyphicon.glyphicon-user
-                                                {{cell.leave_all.length}}
-                                        .month-day-leaves(ng-show = "cell.leave_teammates.length > 0 && !showAllLeaves") 
-                                            a.pull-right(ng-click = "showLeaves(cell.date, cell.leave_teammates)", title = "{{cell.leave_teammates.length}} resource{{cell.leave_teammates.length == 1 ? ' is' : 's are'}} on leave") 
-                                                span.glyphicon.glyphicon-user
-                                                {{cell.leave_teammates.length}}
+                                        ul.leave_entries
+                                           li.leave_entry(class="{{getLeaveEntryClass(leave.type)}}", ng-repeat="leave in cell.leaves[current_leave_filter] track by $index")
+
+                                              span.clear-fix.l_user{{leave.user.username}}
+                                              span.clear-fix.l_user_indicator(ng-show="isCurrentUserLeave(leave)") YOU
+                                              span.clear-fix.l_type{{leave.type}}
+                                       
             
 
     .col-lg-3.no-padding.manhour-utilization(ng-controller="ManHourCtrl")  

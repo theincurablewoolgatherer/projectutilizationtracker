@@ -89,6 +89,13 @@ manhours.service('projects', function($http, ROUTE, MESSAGE) {
     });
   };
 
+  this.getUserProjectList = function(user){
+        return $http.get(ROUTE.USER_PROJECT_LIST + user).then(
+            function(projects) {
+            return projects;
+        });
+  }
+
   this.getUserProjects = function(){
     return $http.get(ROUTE.LOGGED_USER).then(
       function(user) {
@@ -205,8 +212,8 @@ manhours.service('toast', function(ngToast){
       });
     }
 
-    this.leaveToggled = function(showAll){
-      var msgString = showAll ? "Showing all leaves" : "Showing leaves in current project/s";
+    this.leaveToggled = function(filter){
+      var msgString = "Shown Leaves: " + filter.label;
       var msg = ngToast.create({
         content: msgString,
          class: 'info'

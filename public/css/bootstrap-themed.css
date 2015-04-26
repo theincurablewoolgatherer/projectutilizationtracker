@@ -55,9 +55,13 @@ body {
 ul.dropdown-menu{
     border-radius: 0px;
     border-top: 0px;}
-
+.border-bottom-thin{
+}
 ul.dropdown-menu li a{
   font-family: 'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   /* color: #ffffff; */
   font-size: 12px;
   /* transition: all .25s ease-in-out; */

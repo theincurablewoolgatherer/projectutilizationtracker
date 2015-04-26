@@ -85,9 +85,9 @@
   manhours.constant(
   "LEAVE", {
     "types": [
-    {label: "Vacation: Whole Day", type: "Whole Day VL"}, 
-    {label:"Vacation: Half Day", type: "Half Day VL"}, 
-    {label:"Sick: Whole Day", type: "Whole Day SL"}, 
-    {label:"Sick: Half Day", type: "Half Day SL"},
-    {label:"CTO", type: "CTO"}]
+    {label: "Vacation: Whole Day", type: "Whole Day VL", entryClass:"vl"}, 
+    {label:"Vacation: Half Day", type: "Half Day VL",entryClass:"vl"}, 
+    {label:"Sick: Whole Day", type: "Whole Day SL", entryClass:"sl"}, 
+    {label:"Sick: Half Day", type: "Half Day SL", entryClass:"sl"},
+    {label:"CTO", type: "CTO", entryClass:"cto"}]
   });

@@ -1,7 +1,7 @@
 /**********************************************************************
  * Angular Application
  **********************************************************************/
- var manhours = angular.module('manhours', ['ngResource', 'ui.bootstrap', 'ngTagsInput', 'ngContextMenu', 'ngToast']);
+ var manhours = angular.module('manhours', ['ngResource', 'ui.bootstrap', 'ngTagsInput', 'ngContextMenu', 'ngToast', 'ngAnimate']);
 
 /**********************************************************************
  * Configuration
@@ -365,8 +365,13 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
     $scope.month_leaves_all = [];
     $scope.month_manhours = [];
     $scope.showForm = true;
-    $scope.showAllLeaves = false;
+    $scope.current_leave_filter = "my_projects";
     $rootScope.clientTimeZoneOffset = new Date().getTimezoneOffset();
+
+    // Get current logged user
+    $http.get(ROUTE.LOGGED_USER).then(function(result){
+      $rootScope.logged_user = result.data;
+    });
 
     // Receive broadcast to redraw calendar
     $rootScope.$on("redrawCalendar", function(event) {
@@ -386,9 +391,9 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
 
 
     // User changed the leave filter form toolbar
-    $rootScope.$on("leaveFilterChanged", function(event, doShowAll) {
-      $scope.showAllLeaves = doShowAll;
-      toast.leaveToggled(doShowAll);
+    $rootScope.$on("leaveFilterChanged", function(event, filter) {
+      $scope.current_leave_filter = filter.mode;
+      toast.leaveToggled(filter);
     });
 
     $scope.drawCalendar = function(){
@@ -545,53 +550,42 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
                // console.log(leave_url_all);
                 $http.get(leave_url_all).then(
                   function(leaves){
+                       
                       for(var w = 0; w < $scope.cal_month_day_weeks.length; w++){
                         for(var d = 0; d < $scope.cal_month_day_weeks[w].length; d++){
                           var day_leaves = [];
                           var team_day_leaves = [];
+                          $scope.cal_month_day_weeks[w][d].leaves = {"all":[], "my_projects": []};
+                          for(var p = 0; p < $rootScope.projects.length; p++){
+                            $scope.cal_month_day_weeks[w][d].leaves["_"+$rootScope.projects[p]._id] = [];
+                          }
+
                           for(var l = 0; l < leaves.data.length; l++){
                             var leaveDay =  dateHelper.getLocalFromUTCTime(dateHelper.getDateFromString(leaves.data[l].date));
                             var cellDay = $scope.cal_month_day_weeks[w][d].date;
                              
                             if(dateHelper.isSameDay(leaveDay, cellDay)){
-                              day_leaves.push(leaves.data[l]);
-                              if(isTeamMate(user_mates,leaves.data[l].user.username)){
-                                team_day_leaves.push(leaves.data[l]);
-                              }
-                             // console.log(leaves.data[l].user);
-                            }
-                          $scope.cal_month_day_weeks[w][d].leave_all = day_leaves;
-                          $scope.cal_month_day_weeks[w][d].leave_teammates = team_day_leaves;
+                              // day_leaves.push(leaves.data[l]);
 
+                              // all
+                              $scope.cal_month_day_weeks[w][d].leaves.all.push(leaves.data[l]);
+
+                              //projects
+                              if(isTeamMate(user_mates,leaves.data[l].user.username)){
+                                $scope.cal_month_day_weeks[w][d].leaves.my_projects.push(leaves.data[l]);
+                              }
+
+                              //per project
+                              
+                              var leave_user_projects = $scope.getUserProjectList(leaves.data[l].user);
+                              for(var p = 0; p < leave_user_projects.length; p++){
+                                console.log("_"+leave_user_projects);
+                                  $scope.cal_month_day_weeks[w][d].leaves["_"+leave_user_projects].push(leaves.data[l]);
+                              }
+                            }
                           }
                         }
                       }
-                });
-
-                // 3.1 Draw Leave text for the Current Logged on User
-                var leave_url = ROUTE.USER_LEAVES + result.data._id + "/from/"+firstOfMonth.getTime()+"/to/"+lastOfMonth.getTime()+"?"+new Date();
-                $http.get(leave_url).then(
-                  function(leaves){
-                  $scope.month_leaves = leaves.data;
-                  for(var l = 0; l < leaves.data.length; l++){
-                    for(var w = 0; w < $scope.cal_month_day_weeks.length; w++){
-                      for(var d = 0; d < $scope.cal_month_day_weeks[w].length; d++){
-                        var leaveDay =  dateHelper.getLocalFromUTCTime(dateHelper.getDateFromString(leaves.data[l].date));
-                        var cellDay = $scope.cal_month_day_weeks[w][d].date;
-                        if(dateHelper.isSameDay(leaveDay, cellDay)){
-                           $scope.cal_month_day_weeks[w][d].leave = leaves.data[l];
-                           var leave_label;
-                           for(var leave_type = 0; leave_type < LEAVE.types.length; leave_type++){
-                              if(LEAVE.types[leave_type].type == leaves.data[l].type){
-                                leave_label = LEAVE.types[leave_type].label;
-                              }
-                           }
-                          
-                           $scope.cal_month_day_weeks[w][d].leave_label = leave_label;
-                         }
-                      }
-                    }
-                  }
                 });
 
                // 3.2 Retrieve manhours for the month and draw indicator on cells if user already inputted
@@ -623,7 +617,7 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
                     setTimeout( function(){
                       document.getElementById("preloader").style.display = "none";
                       document.getElementById("manhour-container").style.opacity = 1;
-                    }, 1500 );
+                    }, 500 );
 
                     
               });
@@ -702,6 +696,30 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
       });
     };
 
+    $scope.getLeaveEntryClass = function(leave_type){
+     for(var t = 0; t < LEAVE.types.length; t++){
+        if(LEAVE.types[t].type === leave_type){
+          return LEAVE.types[t].entryClass;
+        }
+      }
+    }
+
+    $scope.getUserProjectList = function(user){
+      var user_projects = [];
+      for(var p = 0; p < $rootScope.projects.length; p++){
+        for(var m = 0; m < $rootScope.projects[p].members.length; m++){
+          if($rootScope.projects[p].members[m].username === user.username){
+            user_projects.push($rootScope.projects[p]._id);
+            break;
+          }
+        }
+      }
+      return user_projects;
+    }
+
+    $scope.isCurrentUserLeave = function(leave){
+      return(leave.user.username === $rootScope.logged_user.username);
+    }
     // init
     $scope.selectDate(new Date());
 });
@@ -728,21 +746,24 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
 /**********************************************************************
  * Calendar Toolbar controller
  **********************************************************************/
- manhours.controller('CalendarToolbarCtrl', function($scope, $rootScope){
+ manhours.controller('CalendarToolbarCtrl', function($scope, $rootScope, projects){
 
    
-    $scope.leave_view_modes = [
-      {label:"Show All", showAll:true},
-      {label:"My Project/s",showAll:false}
-    ];
-    $scope.leave_view_current_mode = $scope.leave_view_modes[1];
+    $scope.leave_filters = [
+    {label: "All Projects", mode: "all"},
+    {label: "My Projects", mode: "my_projects"}];
+    projects.getAll().then(function(data){
+      $rootScope.projects = data;
+      for(var p = 0; p < $rootScope.projects.length; p++){
+        $scope.leave_filters.push({label: data[p].name, mode: "_"+data[p]._id});
+      }
+    });
+    $scope.leave_filter_current = $scope.leave_filters[1];
 
-    $scope.setShowAllLeaves = function(val){
+    $scope.filterLeaveView = function(val){
       $rootScope.$broadcast("leaveFilterChanged", val);
-      $scope.leave_view_current_mode = val ?  $scope.leave_view_modes[0] : $scope.leave_view_modes[1];
+      $scope.leave_filter_current = val;
     };
-
-
 
     // User changed the Date
     $rootScope.$on("selectedDateChanged", function(event, args) {
