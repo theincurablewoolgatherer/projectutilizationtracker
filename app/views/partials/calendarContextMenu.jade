@@ -1,5 +1,4 @@
 ul.dropdown-menu.calendar-context-menu(role='menu')
-    
     li(style= "display: {{ showContextMenu ? 'block' : 'none'}}")
       a(ng-click="applyLeave(cell.date, contextMenuOptions[0], {{ leave.type == leaveTypes[0].type ? '0' : '1'}})") 
         {{contextMenuOptions[0]}}

@@ -17,6 +17,39 @@ body{
   src: url('../fonts/proxima_nova_thin_1.eot?#iefix') format('embedded-opentype'), url('../fonts/proxima_nova_thin_1.woff') format('woff'), url('../fonts/proxima_nova_thin_1.ttf') format('truetype');
 
 }
+.mh-utilization-container{
+  height: 380px;
+  overflow-y: auto;
+}
+.mh-utilization-container::-webkit-scrollbar {
+  width: 5px;
+}
+
+.mh-utilization-container::-webkit-scrollbar-thumb:vertical {
+  margin: 5px;
+  background-color: #999;
+  -webkit-border-radius: 5px;
+}
+
+.mh-utilization-container::-webkit-scrollbar-button:start:decrement,
+.mh-utilization-container::-webkit-scrollbar-button:end:increment {
+  height: 5px;
+  display: block;
+}
+.footer{
+  background: #FFF;
+  z-index: 1000000000;
+  border-top: 1px solid #CFCFCF;
+  position: fixed;
+  padding: 8px 15px 0px 15px;
+  text-align: left;
+  bottom: 0px;
+  width: 100%;
+}
+.container{
+  margin-left:0px;
+  margin-right:0px;
+}
 .arrow-dropdown{
   position: absolute;
   top: 100%;
@@ -241,10 +274,12 @@ button.next{
    
 
 }
+
 .month td, .month th{
 	vertical-align: top;
     border: 1px solid #FFF;
     border-collapse: collapse;
+
 }
 .month-days th{
 	  background: #F0F0F0;
@@ -314,6 +349,7 @@ button.next{
   opacity:.9;
   cursor: default;
   min-height: 20px;
+
 }
 
 .leave_entries li:hover{
@@ -326,11 +362,11 @@ button.next{
 
 }
 .leave_entries li.cto{
-	background: #82BA00;
+	background: #0072C6;
 }
 
 .leave_entries li.sl{
-	background:#D3736B;
+	background:#bf4242;
 }
 
 .leave_entries li.vl{

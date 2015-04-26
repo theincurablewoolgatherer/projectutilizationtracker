@@ -50,11 +50,15 @@ block navigationpage_content
 
                                       .month-day-details
                                         ul.leave_entries
-                                           li.leave_entry(class="{{getLeaveEntryClass(leave.type)}}", ng-repeat="leave in cell.leaves[current_leave_filter] track by $index")
+                                           li.leave_entry(class="{{getLeaveEntryClass(leave.type)}}", ng-repeat="leave in cell.leaves[current_leave_filter] | orderObjectBy:'position'", ng-click="showLeaves(cell.date, cell.leaves[current_leave_filter])")
 
                                               span.clear-fix.l_user{{leave.user.username}}
                                               span.clear-fix.l_user_indicator(ng-show="isCurrentUserLeave(leave)") YOU
                                               span.clear-fix.l_type{{leave.type}}
+                  br
+                  br
+                  
+                  
                                        
             
 
@@ -93,7 +97,7 @@ block navigationpage_content
                   .panel-body
                     form(method = "post")
                       .row
-                        .table-responsive.col-lg-12
+                        .table-responsive.col-lg-12.mh-utilization-container
                           table.table.noborder
                              
                               tbody
@@ -101,12 +105,12 @@ block navigationpage_content
                                   td.mh_task
                                      label.control-label() Non-Working
                                   td
-                                    input.form-control.mh_duration(ng-model = "manhour.nonworking", ng-disabled="on_whole_day_leave", type = "number", placeholder="0", ng-change = "updateTotalUtilization()", step = ".01", min = "0")
+                                    input.form-control.mh_duration(ng-model = "manhour.nonworking", ng-disabled="on_whole_day_leave", type = "number", placeholder="0", ng-change = "updateTotalUtilization()", step = ".25", min = "0")
                                 tr(ng-repeat="mh_field in manhour.mh_fields track by $index")
                                   td.mh_task
                                      label.control-label() {{mh_field.project}} - {{mh_field.field_name}}
                                   td
-                                    input.form-control.mh_duration(ng-model = "manhour.tasks[$index].duration", ng-disabled="on_whole_day_leave", ng-change = "updateTotalUtilization()", type = "number", step = ".01", placeholder="0", min = "0")
+                                    input.form-control.mh_duration(ng-model = "manhour.tasks[$index].duration", ng-disabled="on_whole_day_leave", ng-change = "updateTotalUtilization()", type = "number", step = ".25", placeholder="0", min = "0")
 
                        
 
@@ -132,9 +136,8 @@ block navigationpage_content
                                      label.control-label() {{ manhour.isOvertime == 1 ? 'Overtime' : 'OTY'}}
                                   td {{overtimeHours | number: 2}} hr                                    
           .row
-            .col-lg-6
+            .col-lg-12
               button.btn.btn-primary.space-right(ng-click='deleteManhour()', ng-show= 'manhour._id') Delete
-            .col-lg-6
               button.btn.btn-primary(ng-click='saveManhour()', ng-disabled = "!saveEnabled || on_whole_day_leave") Save                    
       
 

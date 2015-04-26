@@ -564,9 +564,17 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
                             var leaveDay =  dateHelper.getLocalFromUTCTime(dateHelper.getDateFromString(leaves.data[l].date));
                             var cellDay = $scope.cal_month_day_weeks[w][d].date;
                              
-                            if(dateHelper.isSameDay(leaveDay, cellDay)){
-                              // day_leaves.push(leaves.data[l]);
 
+                           
+                            //
+                            if(dateHelper.isSameDay(leaveDay, cellDay)){
+                              leaves.data[l].position = 10;
+                               //check if for logged user
+                               console.log($rootScope.logged_user.username === leaves.data[l].user.username);
+                              if($rootScope.logged_user.username === leaves.data[l].user.username){
+                                leaves.data[l].position = 1;
+                                $scope.cal_month_day_weeks[w][d].leave = leaves.data[l];
+                              }
                               // all
                               $scope.cal_month_day_weeks[w][d].leaves.all.push(leaves.data[l]);
 
@@ -576,12 +584,12 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
                               }
 
                               //per project
-                              
                               var leave_user_projects = $scope.getUserProjectList(leaves.data[l].user);
                               for(var p = 0; p < leave_user_projects.length; p++){
                                 console.log("_"+leave_user_projects);
                                   $scope.cal_month_day_weeks[w][d].leaves["_"+leave_user_projects].push(leaves.data[l]);
                               }
+                             
                             }
                           }
                         }
@@ -604,6 +612,7 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
                              $scope.cal_month_day_weeks[w][d].manhour = manhours.data[m];
 
                              $scope.cal_month_day_weeks[w][d].utilization = 0;
+
                              // Get total utilization
                              for(var t = 0; t < manhours.data[m].tasks.length; t++){
                                 $scope.cal_month_day_weeks[w][d].utilization += manhours.data[m].tasks[t].duration || 0;
@@ -1151,4 +1160,21 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
       return str;
     }
   };
+});
+manhours.filter('orderObjectBy', function(){
+ return function(input, attribute) {
+    if (!angular.isObject(input)) return input;
+
+    var array = [];
+    for(var objectKey in input) {
+        array.push(input[objectKey]);
+    }
+
+    array.sort(function(a, b){
+        a = parseInt(a[attribute]);
+        b = parseInt(b[attribute]);
+        return a - b;
+    });
+    return array;
+ }
 });
