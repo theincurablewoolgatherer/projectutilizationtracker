@@ -18,7 +18,7 @@ body{
 
 }
 .mh-utilization-container{
-  height: 380px;
+  height: 360px;
   overflow-y: auto;
 }
 .mh-utilization-container::-webkit-scrollbar {
@@ -121,6 +121,9 @@ body{
   border-radius: 100px;
   padding: 2px 6px 0px 6px;
   background: rgba(0, 0, 0, 0.28);
+}
+.tooltip{
+  z-index:1000 !important;
 }
 .toolbar-text{
 	margin-top:5px;
@@ -349,7 +352,7 @@ button.next{
   opacity:.9;
   cursor: default;
   min-height: 20px;
-
+  
 }
 
 .leave_entries li:hover{
@@ -380,7 +383,7 @@ button.next{
 .leave_entries li .l_user_indicator{
   float: left;
   margin-left: 3px;
-  background: rgba(0, 0, 0, 0.31);
+  background: rgba(186, 0, 0, 1);
   width: 25px;
   text-align: center;
   border-radius: 100px;

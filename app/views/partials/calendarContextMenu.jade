@@ -23,8 +23,7 @@ ul.dropdown-menu.calendar-context-menu(role='menu')
         {{contextMenuOptions[4]}}
         span.glyphicon.glyphicon-ok.pull-right(style= "display: {{leave.type == leaveTypes[4].type ? 'inline-block' : 'none'}}")
 
-    li(style= "display: {{ showContextMenu ? 'block' : 'none'}}")
-      a(ng-click="showLeaves(cell.date, cell.leave_all)") View Leaves
+
       
     li(style= "display: {{ !showContextMenu ? 'block' : 'none'}}")
       a {{holidayWeekendText}}

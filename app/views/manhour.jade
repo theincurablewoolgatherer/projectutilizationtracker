@@ -43,14 +43,14 @@ block navigationpage_content
                                       .month-day-num.pull-left {{cell.date.getDate()}}
                                       span.pull-right.day-utilization(ng-show = "cell.manhour && cell.shouldDrawDetails") 
                                          
-                                          span.spaced-right {{cell.utilization}} {{(cell.utilization > 1)? 'hrs' : 'hr'}}  
+                                          span.spaced-right {{cell.utilization  | number: 2}} {{(cell.utilization > 1)? 'hrs' : 'hr'}}  
                                           
 
                                       span.month-day-holiday(ng-show = "cell.holiday") {{cell.holiday.name}}
 
                                       .month-day-details
                                         ul.leave_entries
-                                           li.leave_entry(class="{{getLeaveEntryClass(leave.type)}}", ng-repeat="leave in cell.leaves[current_leave_filter] | orderObjectBy:'position'", ng-click="showLeaves(cell.date, cell.leaves[current_leave_filter])")
+                                           li.leave_entry(class="{{getLeaveEntryClass(leave.type)}}", ng-repeat="leave in cell.leaves[current_leave_filter] | orderObjectBy:'position'", ng-click="showLeaves(cell.date, cell.leaves[current_leave_filter])",  tooltip-placement="top" tooltip="{{leave.remarks}}")
 
                                               span.clear-fix.l_user{{leave.user.username}}
                                               span.clear-fix.l_user_indicator(ng-show="isCurrentUserLeave(leave)") YOU

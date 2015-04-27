@@ -570,7 +570,7 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
                             if(dateHelper.isSameDay(leaveDay, cellDay)){
                               leaves.data[l].position = 10;
                                //check if for logged user
-                               console.log($rootScope.logged_user.username === leaves.data[l].user.username);
+                               
                               if($rootScope.logged_user.username === leaves.data[l].user.username){
                                 leaves.data[l].position = 1;
                                 $scope.cal_month_day_weeks[w][d].leave = leaves.data[l];
@@ -586,8 +586,8 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
                               //per project
                               var leave_user_projects = $scope.getUserProjectList(leaves.data[l].user);
                               for(var p = 0; p < leave_user_projects.length; p++){
-                                console.log("_"+leave_user_projects);
-                                  $scope.cal_month_day_weeks[w][d].leaves["_"+leave_user_projects].push(leaves.data[l]);
+                               
+                                  $scope.cal_month_day_weeks[w][d].leaves["_"+leave_user_projects[p]].push(leaves.data[l]);
                               }
                              
                             }
