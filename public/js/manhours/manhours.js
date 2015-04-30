@@ -188,11 +188,12 @@ manhours.controller('ReportCtrl', function($scope, $rootScope, $http, projects, 
   $scope.updateReport = function(){
 
     var url = ROUTE.REPORT_PROJECTDATERANGE + $scope.project._id + '/from/' + $scope.startDate.getTime() + '/to/' + $scope.endDate.getTime();
-    //console.log(url);
+    //console.log(ROUTE.REPORT_CSV + $scope.project._id + '/from/' + $scope.startDate.getTime() + '/to/' + $scope.endDate.getTime());
+    console.log(url);
     $http.get(url).then(
       function(manhours) {
         $scope.result = manhours.data;
-        $scope.showLeaves = Object.keys(manhours.data.leaveSummary).length > 0;
+        $scope.showLeaves = (manhours.data.leaveSummary && Object.keys(manhours.data.leaveSummary).length) > 0;
        
         // console.log($scope.result);
       });
@@ -821,7 +822,7 @@ manhours.controller('UsersCtrl', function($scope, $rootScope, users,  $modal) {
  **********************************************************************/
  manhours.controller('ManHourCtrl', function($scope, $rootScope, $filter, $modal, $http, inout, ROUTE, MESSAGE, MODELMODE, LEAVE, validation, projects, holidays, manhour, toast, dateHelper) {
   $scope.saveEnabled = true;
-
+  
   // Inout Time - Dropdown Values
   $scope.inout_time_hours = inout.getHours();
   $scope.inout_time_minutes = inout.getMinutes();
