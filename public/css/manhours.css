@@ -378,7 +378,7 @@ button.next{
 
 .leave_entries li .l_user{
   font-weight: bold;
-  float:left;
+  /* float:left; */
 }
 .leave_entries li .l_user_indicator{
   float: left;
@@ -393,9 +393,29 @@ button.next{
   margin-right: 3px;
 }
 .leave_entries li .l_type{
-  float:right;
+ 
   font-size:8.5px;
   opacity:.85;
+}
+@media screen and (max-width:1600px) {
+    .leave_entries li .l_type {
+      display:block !important;
+    }
+}
+@media screen and (min-width:1601px) {
+    .leave_entries li .l_type {
+ float:right;
+     }
+}
+@media (max-width: 768px){
+.side-body {
+  margin-top:0px !important;
+  }
+  
+
+      .navbar {
+        display:none;
+      }
 }
 .month-day-leaves{
 	

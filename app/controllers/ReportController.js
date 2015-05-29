@@ -2,14 +2,12 @@ var express = require('express');
 var app = express.Router();
 var passport = require('passport');
 var constants = require('../utils/constants');
-var dateutil = require('../utils/date-utils');
 var Manhour = require(__dirname+'/../models/Manhour');
 var Project = require(__dirname+'/../models/Project');
 var Holiday = require(__dirname+'/../models/Holiday');
 var Leave = require(__dirname+'/../models/Leave');
 var mongoose = require("mongoose");
 var csv = require('express-csv');
-
 //========================================================
 // I. Controller actions
 //========================================================
@@ -17,61 +15,8 @@ showReportsView = function(req, res){
 	res.render('reports', { title: 'ASL Utilization Tracker', isManager: req.user.usertype == constants.USERTYPE_PROJECT_MANAGER } );
 }
 
-getSummarizedCSV  = function(req, res){
-  var start = new Date(parseInt(req.params.start));
-  start.setHours(0,0,0,0);
-  var end =  new Date(parseInt(req.params.end));
-  end.setHours(23,59,59,0);
+getSummarizedCSV  = function(){
 
-  var weekly_project_summary = {};
-  var tempDate = new Date(start);
-  for(var d = tempDate; d <= end; d.setDate(d.getDate() + 1)) {
-    var week_num = dateutil.getWeekNumber(d);
-    var weekly_project_summary_week_key = "_" + week_num;
-    if(!weekly_project_summary.hasOwnProperty(weekly_project_summary_week_key)){
-      weekly_project_summary[weekly_project_summary_week_key] = {project_rows : {}};
-    }
-  }
-  Project.find(function (err, projects) {
-    for(var p = 0; p < projects.length; p++){
-      var project_row_key = "_" + projects[p]._id;
-      for (var _week in weekly_project_summary) {
-        if (weekly_project_summary.hasOwnProperty(_week)) {
-          weekly_project_summary[_week].project_rows[project_row_key] = {
-              project_name: projects[p].name,
-              total_overtime: 0,
-              total_filed_overtime: 0,
-              total_unfiled_overtime: 0
-            };
-        }
-      }
-    }
-
-    Holiday.find(function (err, holidays) {
-      Manhour.find({
-        date: { $gte:start, $lte:end}
-      }, function (err, manhours) {
-        for(var i = 0; i < manhours.length; i++){
-          var manhour = manhours[i];
-          if(manhour.otProject){
-            var otHours = dateutil.getOvertimehours(manhour, holidays);
-            var week_key = "_" + dateutil.getWeekNumber(manhour.date);
-            var project_row_key = "_" + manhour.otProject;
-            var weekly_project_row = weekly_project_summary[week_key].project_rows[project_row_key];
-            if(manhour.isOvertime){
-              weekly_project_row.total_filed_overtime += otHours;
-            }else{
-              weekly_project_row.total_unfiled_overtime += otHours;
-            }
-            weekly_project_row.total_overtime += otHours;
-          }
-        }
-        console.log(projects);
-        res.statusCode = 200;
-        res.json(weekly_project_summary);
-      });
-    });
-  });
 }
 
 printReportsView = function(req, res){
@@ -126,6 +71,7 @@ getCsvReport = function(req, res){
           member_row.push(duration_total);
           csv_file.push(member_row);
         }
+
       }
       res.csv(csv_file);
     }
@@ -412,6 +358,5 @@ app.get('/', isAdmin, showReportsView);
 //app.get('/csv/summary', getCsvSummary);
 app.get('/print/:projectname/:projectid/from/:start/to/:end', isAdmin, printReportsView);
 app.get('/csv/:projectid/from/:start/to/:end', getCsvReport);
-app.get('/json/:projectid/from/:start/to/:end', getJsonReport);
-app.get('/summary/json/:start/to/:end', getSummarizedCSV)
+app.get('/json/:projectid/from/:start/to/:end', getJsonReport)
 module.exports = app;
